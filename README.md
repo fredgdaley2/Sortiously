@@ -2,6 +2,8 @@
 
 Sortiously - Sort a delimited or fixed width files by a defined key with options filter data and report progress.
 
+Additionally can merge purge files. Documentation in ReadMeMurgePurge.txt
+
 Dependencies: System.Data.SQLite.Core
 
 Sort more than one file at a time using background workers or multiple threads.
