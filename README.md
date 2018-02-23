@@ -12,7 +12,7 @@
 
     The progress report object, SortProgress looks like this:
     
-    ```csharp 
+   
     public class SortProgress
     {
         //true when reading the file.
@@ -22,7 +22,7 @@
         //the line number of the corresponding operation reading or writing;
         public int Counter { get; set; }
     }
-    ```
+   
 
     The original file is not overwritten or changed.
     All functions return a SortResults instance.
