@@ -1,6 +1,8 @@
 
     Sortiously - Sort a delimited or fixed width files by a defined key with options filter data and report progress.
 
+    Dependencies: System.Data.SQLite.Core
+
     Sort more than one file at a time using background workers or multiple threads.
 
     Progress Reporting: Use this knowing that it will slow down the process due to writing to console or other output source.
