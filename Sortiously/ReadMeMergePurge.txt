@@ -47,23 +47,23 @@ public class MergePurgeResults
     public int MatchesCount { get; set; }
 
     //The file path to the Adds file only populated in Passive mode
-    //The name is the detail file name suffixed with "_ds_adds" and the detail's extension
+    //The name is the detail file name suffixed with "_adds" and the detail's extension
     public string AddsFilePath { get; set; }
 
     //The file path to the Deletes file only populated in Passive mode
-    //The name is the detail file name suffixed with "_ds_deletes" and the detail's extension
+    //The name is the detail file name suffixed with "_deletes" and the detail's extension
     public string DeletesFilePath { get; set; }
 
     //The file path to the Updates file only populated in Passive mode
-    //The name is the detail file name suffixed with "_ds_updates" and the detail's extension
+    //The name is the detail file name suffixed with "_updates" and the detail's extension
     public string UpdatesFilePath { get; set; }
 
     //The file path to the Ignored file only populated in Passive mode
-    //The name is the detail file name suffixed with "_ds_ignored" and the detail's extension
+    //The name is the detail file name suffixed with "_ignored" and the detail's extension
     public string IgnoredFilePath { get; set; }
 
     //The file path to the newly created master file in either Active or Passive mode.
-    //The name is the master file name suffixed with "_ds_master" and the masters's extension
+    //The name is the master file name suffixed with "_master" and the masters's extension
     public string NewMasterFilePath { get; set; }
 }
 
@@ -95,6 +95,7 @@ public static MergePurgeResults MergePurge<T>(MasterFixedWidthFileSource<T> mast
                                               DataMode processMode = DataMode.Passive)
 
 Each method will need a method that accepts a MergePurgeParm object for its processData action.
+
 Here is an example of a processData action method.
 
 public class MergePurgeParam
