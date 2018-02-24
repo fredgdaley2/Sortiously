@@ -58,7 +58,7 @@ duplicates file will also include the header.
 Anytime during the process when an exception is encountered any files produced will be removed.  The exception will then be thrown so the consuming application can take the appropriate action.
 
 
-There are four methods each to sort a delimited or fixed width file. Each method has an options filter data and report progress.
+#### There are four methods each to sort a delimited or fixed width file. Each method has an options filter data and report progress.
 
 1. Sort using a numeric key providing a column number for delimited files or starting position and length for fixed width files.
 2. Sort using a alphanumeric key providing a column number and length for delimited files or starting position and length for fixed width files.
