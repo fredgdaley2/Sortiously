@@ -24,7 +24,7 @@
         public int Counter { get; set; }
     }
 
-All functions return a SortResults instance.
+#### All functions return a SortResults instance.
 
     public class SortResults
     {
@@ -65,9 +65,9 @@ Anytime during the process when an exception is encountered any files produced w
 3. Sort using a numeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
 4. Sort using a alphanumeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
 
-Here are the methods.
+#### Here are the methods.
 
-Sorts a delimited file given a numeric key.
+##### Sorts a delimited file given a numeric key.
 
     public static SortResults SortDelimitedByNumericKey(
                                    string sourcefilePath,
@@ -83,7 +83,7 @@ Sorts a delimited file given a numeric key.
 
 
 
-Sorts a delimited file given a alphanumeric key.
+##### Sorts a delimited file given a alphanumeric key.
 
     public static SortResults SortDelimitedByAlphaNumKey(
                                    string sourcefilePath,
@@ -98,7 +98,7 @@ Sorts a delimited file given a alphanumeric key.
                                    SortDirection sortDir = SortDirection.Ascending,
                                    Action<SortProgress> progress = null)
 
-Sorts a delimited file given a numeric key.
+##### Sorts a delimited file given a numeric key.
 
     public static SortResults SortDelimitedByNumericKey(
                                    string sourcefilePath,
@@ -112,7 +112,7 @@ Sorts a delimited file given a numeric key.
                                    SortDirection sortDir = SortDirection.Ascending,
                                    Action<SortProgress> progress = null)
 
-Sorts a delimited file given a alphanumeric key.
+##### Sorts a delimited file given a alphanumeric key.
 
     public static SortResults SortDelimitedByAlphaNumKey(
                                    string sourcefilePath,
@@ -127,7 +127,7 @@ Sorts a delimited file given a alphanumeric key.
                                    Action<SortProgress> progress = null)
 
 
-Sorts a fixed width file given a numeric key.
+##### Sorts a fixed width file given a numeric key.
 
     public static SortResults SortFixedWidthByNumericKey(
                                    string sourcefilePath,
@@ -140,7 +140,7 @@ Sorts a fixed width file given a numeric key.
                                    SortDirection sortDir = SortDirection.Ascending,
                                    Action<SortProgress> progress = null)
 
-Sorts a fixed width file given a alphanumeric key.
+##### Sorts a fixed width file given a alphanumeric key.
 
     public static SortResults SortFixedWidthByAlphaNumKey(
                                    string sourcefilePath,
@@ -153,7 +153,7 @@ Sorts a fixed width file given a alphanumeric key.
                                    SortDirection sortDir = SortDirection.Ascending,
                                    Action<SortProgress> progress = null)
 
-Sorts a fixed width file given a numeric key.
+##### Sorts a fixed width file given a numeric key.
 
     public static SortResults SortFixedWidthByNumericKey(
                                    string sourcefilePath,
@@ -167,7 +167,7 @@ Sorts a fixed width file given a numeric key.
                                    Action<SortProgress> progress = null)
 
 
-Sorts a fixed width file given a alphanumeric key.
+##### Sorts a fixed width file given a alphanumeric key.
 
     public static SortResults SortFixedWidthByAlphaNumKey(
                                    string sourcefilePath,
@@ -275,7 +275,7 @@ Sorts a fixed width file given a alphanumeric key.
         static string GetNameKey(string[] fields, string line)
         {
            //fields[7] = last name, fields[6] = first name
-           string key = fields[7].Trim().ToLower() + " " + fields[6].Trim().ToLower();
+           string key = string.Join(" ",fields[7].Trim().ToLower(),fields[6].Trim().ToLower());
            return key;
         }
 
