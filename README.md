@@ -2,13 +2,15 @@
 
 #### Sortiously - Sort a delimited or fixed width files by a defined key with data filter options and report progress.
 
-*Additionally can merge purge files. Documentation in **ReadMeMurgePurge.txt***
+*Additionally can merge purge files. Documentation in **ReadMeMergePurge.txt***
 
 ##### *Dependencies:* System.Data.SQLite.Core
 
-Sort more than one file at a time using background workers or multiple threads.
+* Sort more than one file at a time using multiple threads.
+* The original file is not overwritten or changed.
+* Very CPU and memory friendly.
 
-Progress Reporting: Use this knowing that it will slow down the process due to writing to console or other output source.  So if you want pure speed don't report the progress.
+**Progress Reporting:** Use this knowing that it will slow down the process due to writing to console or other output source.  So if you want pure speed don't report the progress.
 
 #### The progress report object:
 
@@ -22,7 +24,6 @@ Progress Reporting: Use this knowing that it will slow down the process due to w
         public int Counter { get; set; }
     }
 
-The original file is not overwritten or changed.
 All functions return a SortResults instance.
 
     public class SortResults
@@ -49,9 +50,9 @@ All functions return a SortResults instance.
 first unique key and data and the subsequent duplicates will be put in the duplicates file. If the source file has an header the
 duplicates file will also include the header.
 
-**SortedFilePath:** The original sorted file name and extension suffixed with _ds_sorted i.e. FileToBeSorted_ds_sorted.tsv
+**SortedFilePath:** The original sorted file name and extension suffixed with _sorted i.e. FileToBeSorted_sorted.tsv
 
-**DuplicatesFilePath:** The original sorted file name and extension suffixed with _ds_dupes i.e. FileToBeSorted_ds_dupes.tsv
+**DuplicatesFilePath:** The original sorted file name and extension suffixed with _dupes i.e. FileToBeSorted_dupes.tsv
 
 #### Self cleanup:
 Anytime during the process when an exception is encountered any files produced will be removed.  The exception will then be thrown so the consuming application can take the appropriate action.
@@ -63,8 +64,6 @@ There are four methods each to sort a delimited or fixed width file. Each method
 2. Sort using a alphanumeric key providing a column number and length for delimited files or starting position and length for fixed width files.
 3. Sort using a numeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
 4. Sort using a alphanumeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
-
-Very CPU and memory friendly.
 
 Here are the methods.
 
