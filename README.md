@@ -1,18 +1,16 @@
 # Sortiously
 
-Sortiously - Sort a delimited or fixed width files by a defined key with options filter data and report progress.
+#### Sortiously - Sort a delimited or fixed width files by a defined key with data filter options and report progress.
 
-Additionally can merge purge files. Documentation in ReadMeMurgePurge.txt
+*Additionally can merge purge files. Documentation in **ReadMeMurgePurge.txt***
 
-Dependencies: System.Data.SQLite.Core
+##### *Dependencies:* System.Data.SQLite.Core
 
 Sort more than one file at a time using background workers or multiple threads.
 
-Progress Reporting: Use this knowing that it will slow down the process due to writing to console or other output source.
-In testing when doing a file with 175,000 plus lines it took about 25 to 30 seconds more to finish the process. So if you want pure
-speed don't report the progress.
+Progress Reporting: Use this knowing that it will slow down the process due to writing to console or other output source.  So if you want pure speed don't report the progress.
 
-The progress report object, SortProgress looks like this:
+#### The progress report object:
 
     public class SortProgress
     {
@@ -37,25 +35,26 @@ All functions return a SortResults instance.
         public string DuplicatesFilePath { get; set; }
     }
 
-LinesRead: The number of lines read minus the header if included.
+**LinesRead:** The number of lines read minus the header if included.
 
-LinesSorted: The number of lines in the sorted file minus the header if included.
+**LinesSorted:** The number of lines in the sorted file minus the header if included.
 
-Duplicates: The number of duplicates when using a unique key.
+**Duplicates:** The number of duplicates when using a unique key.
 
-Filtered: The number of filtered lines when using a filter.
+**Filtered:** The number of filtered lines when using a filter.
 
-SortedFilePath: The full path of the sorted file
+**SortedFilePath:** The full path of the sorted file
 
-DuplicatesFilePath: The full path of the file that contains the duplicates when using a unique key. Duplicates will include the
+**DuplicatesFilePath:** The full path of the file that contains the duplicates when using a unique key. Duplicates will include the
 first unique key and data and the subsequent duplicates will be put in the duplicates file. If the source file has an header the
 duplicates file will also include the header.
 
-SortedFilePath: The original sorted file name and extension suffixed with _ds_sorted i.e. FileToBeSorted_ds_sorted.tsv
+**SortedFilePath:** The original sorted file name and extension suffixed with _ds_sorted i.e. FileToBeSorted_ds_sorted.tsv
 
-DuplicatesFilePath: The original sorted file name and extension suffixed with _ds_dupes i.e. FileToBeSorted_ds_dupes.tsv
+**DuplicatesFilePath:** The original sorted file name and extension suffixed with _ds_dupes i.e. FileToBeSorted_ds_dupes.tsv
 
-Self cleanup: Anytime during the process when an exception is encountered any files produced will be removed.  The exception will then be thrown so the consuming application can take the appropriate action.
+#### Self cleanup:
+Anytime during the process when an exception is encountered any files produced will be removed.  The exception will then be thrown so the consuming application can take the appropriate action.
 
 
 There are four methods each to sort a delimited or fixed width file. Each method has an options filter data and report progress.
@@ -71,7 +70,8 @@ Here are the methods.
 
 Sorts a delimited file given a numeric key.
 
-    public static SortResults SortDelimitedByNumericKey(string sourcefilePath,
+    public static SortResults SortDelimitedByNumericKey(
+                                   string sourcefilePath,
                                    Func<string[], string, bool> dataFilter = null,
                                    string destinationFolder = null,
                                    string delimiter = Constants.Delimiters.Comma,
@@ -86,7 +86,8 @@ Sorts a delimited file given a numeric key.
 
 Sorts a delimited file given a alphanumeric key.
 
-    public static SortResults SortDelimitedByAlphaNumKey(string sourcefilePath,
+    public static SortResults SortDelimitedByAlphaNumKey(
+                                   string sourcefilePath,
                                    Func<string[], string, bool> dataFilter = null,
                                    string destinationFolder = null,
                                    string delimiter = Constants.Delimiters.Comma,
@@ -114,7 +115,8 @@ Sorts a delimited file given a numeric key.
 
 Sorts a delimited file given a alphanumeric key.
 
-    public static SortResults SortDelimitedByAlphaNumKey(string sourcefilePath,
+    public static SortResults SortDelimitedByAlphaNumKey(
+                                   string sourcefilePath,
                                    Func<string[], string, string> getKey,
                                    Func<string[], string, bool> dataFilter = null,
                                    string destinationFolder = null,
@@ -128,7 +130,8 @@ Sorts a delimited file given a alphanumeric key.
 
 Sorts a fixed width file given a numeric key.
 
-    public static SortResults SortFixedWidthByNumericKey(string sourcefilePath,
+    public static SortResults SortFixedWidthByNumericKey(
+                                   string sourcefilePath,
                                    Func<string, bool> dataFilter = null,
                                    string destinationFolder = null,
                                    bool hasHeader = true,
@@ -140,7 +143,8 @@ Sorts a fixed width file given a numeric key.
 
 Sorts a fixed width file given a alphanumeric key.
 
-    public static SortResults SortFixedWidthByAlphaNumKey(string sourcefilePath,
+    public static SortResults SortFixedWidthByAlphaNumKey(
+                                   string sourcefilePath,
                                    Func<string, bool> dataFilter = null,
                                    string destinationFolder = null,
                                    bool hasHeader = true,
@@ -152,7 +156,8 @@ Sorts a fixed width file given a alphanumeric key.
 
 Sorts a fixed width file given a numeric key.
 
-    public static SortResults SortFixedWidthByNumericKey(string sourcefilePath,
+    public static SortResults SortFixedWidthByNumericKey(
+                                   string sourcefilePath,
                                    Func<string, long> getKey,
                                    Func<string, bool> dataFilter = null,
                                    string destinationFolder = null,
@@ -165,7 +170,8 @@ Sorts a fixed width file given a numeric key.
 
 Sorts a fixed width file given a alphanumeric key.
 
-    public static SortResults SortFixedWidthByAlphaNumKey(string sourcefilePath,
+    public static SortResults SortFixedWidthByAlphaNumKey(
+                                   string sourcefilePath,
                                    Func<string, string> getKey,
                                    Func<string, bool> dataFilter = null,
                                    string destinationFolder = null,
@@ -175,9 +181,10 @@ Sorts a fixed width file given a alphanumeric key.
                                    SortDirection sortDir = SortDirection.Ascending,
                                    Action<SortProgress> progress = null)
 
-Examples:
+#### Examples:
 
-        SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
+        SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
+                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
                 destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
                 delimiter: Delimiters.Tab,
                 keyColumn: 2,
@@ -186,9 +193,10 @@ Examples:
                 sortDir: SortDirection.Descending);
 
 
-Example showing how to implement the progress reporting.
+#### Example showing how to implement the progress reporting.
 
-            SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
+            SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
+                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
                 destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
                 delimiter: Delimiters.Tab,
                 keyColumn: 2,
@@ -210,9 +218,10 @@ Example showing how to implement the progress reporting.
         }
 
 
-Example of custom key construction with a lambda expression
+#### Example of custom key construction with a lambda expression
 
-        SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
+        SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
+                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
                 getKey: (fields, line) => fields[2].Trim().PadLeft(11, '0'),
                 destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
                 delimiter: Delimiters.Tab,
@@ -221,7 +230,8 @@ Example of custom key construction with a lambda expression
 
 
 
-       SortResults srtResults = SortFile.SortFixedWidthByAlphaNumKey(sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMeFW.txt",
+       SortResults srtResults = SortFile.SortFixedWidthByAlphaNumKey(
+                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMeFW.txt",
                 destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
                 hasHeader: false,
                 keyDef: new FixedWidthKey { StartPos = 0, KeyLength = 12 },
@@ -229,9 +239,10 @@ Example of custom key construction with a lambda expression
                 sortDir: SortDirection.Ascending);
 
 
-Example of custom key construction
+#### Example of custom key construction
 
-       SortResults srtResults = SortFile.SortFixedWidthByAlphaNumKey(sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMeFW.txt",
+       SortResults srtResults = SortFile.SortFixedWidthByAlphaNumKey(
+                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMeFW.txt",
                 getKey: GetFixedKey,
                 destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
                 hasHeader: false,
@@ -245,11 +256,12 @@ Example of custom key construction
 
 
 
-Example of custom key construction and data filtering
+#### Example of custom key construction and data filtering
 
         static void SortDelimitedGetKeyTestCsv()
         {
-            SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortIt.csv",
+            SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
+                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortIt.csv",
                 getKey: GetNameKey,
                 dataFilter: FilterOutBlankNames,
                 destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
