@@ -1,6 +1,6 @@
 using System;
 
-namespace Sortiously
+namespace Sortiously.Interfaces
 {
     public interface IFileSource
     {

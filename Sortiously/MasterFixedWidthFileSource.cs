@@ -1,3 +1,5 @@
+using Sortiously.Interfaces;
+
 namespace Sortiously
 {
     public class MasterFixedWidthFileSource<T> : FixedWidthFileSource<T>, ISortableFile

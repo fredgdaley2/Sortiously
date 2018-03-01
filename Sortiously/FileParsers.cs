@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.VisualBasic.FileIO;
-
+using Sortiously.Framework;
 namespace Sortiously
 {
     public static class FileParser
@@ -58,17 +58,12 @@ namespace Sortiously
         {
             using (TextFieldParser parser = txtFldParser)
             {
-                try
+                int lineNum = 1;
+                while (!parser.EndOfData)
                 {
-                    while (!parser.EndOfData)
-                    {
-                        string[] data = parser.ReadFields();
-                        dataReadAction(data, parser.LineNumber - 1);
-                    }
-                }
-                catch (MalformedLineException)
-                {
-                    throw;
+                    string[] data = parser.ReadFields();
+                    dataReadAction(data, lineNum);
+                    lineNum++;
                 }
 
             }

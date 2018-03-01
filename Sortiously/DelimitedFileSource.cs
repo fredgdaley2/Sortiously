@@ -1,4 +1,5 @@
 ﻿using System;
+using Sortiously.Interfaces;
 
 namespace Sortiously
 {

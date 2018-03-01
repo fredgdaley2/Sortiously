@@ -1,4 +1,4 @@
-﻿namespace Sortiously
+﻿namespace Sortiously.Interfaces
 {
     public interface ISortableFile
     {

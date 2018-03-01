@@ -1,6 +1,6 @@
 using System;
 
-namespace Sortiously
+namespace Sortiously.Framework
 {
     public static class SortHelpers
     {
