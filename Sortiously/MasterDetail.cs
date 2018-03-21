@@ -262,8 +262,8 @@ namespace Sortiously
                 srtKey = sqlRepo.KeyInDb(detail.GetKey(mgPurgeParam.DetailFields, line));
             }
 
-            mgPurgeParam.KeyFound = srtKey != null;
-            string masterData = srtKey == null ? string.Empty : srtKey.Data;
+            mgPurgeParam.KeyFound = srtKey.Found;
+            string masterData = !srtKey.Found ? string.Empty : srtKey.Data;
 
             if (mgPurgeParam.KeyFound)
             {
@@ -297,8 +297,8 @@ namespace Sortiously
                 srtKey = sqlRepo.KeyInDb(detail.GetKey(line));
             }
 
-            mgPurgeParam.KeyFound = srtKey != null;
-            string masterData = srtKey == null ? string.Empty : srtKey.Data;
+            mgPurgeParam.KeyFound = srtKey.Found;
+            string masterData = !srtKey.Found ? string.Empty : srtKey.Data;
 
             if (mgPurgeParam.KeyFound)
             {
@@ -332,8 +332,9 @@ namespace Sortiously
                 srtKey = sqlRepo.KeyInDb(detail.GetKey(line));
             }
 
-            mgPurgeParam.KeyFound = srtKey != null;
-            string masterData = srtKey == null ? string.Empty : srtKey.Data;
+            mgPurgeParam.KeyFound = srtKey.Found;
+            string masterData = !srtKey.Found ? string.Empty : srtKey.Data;
+
 
             if (mgPurgeParam.KeyFound)
             {
@@ -361,13 +362,13 @@ namespace Sortiously
             StreamWriter[] actionWriters)
         {
             SortKey<T> srtKey = null;
+
             using (SqliteRepository<T> sqlRepo = new SqliteRepository<T>(dbConnPath))
             {
                 srtKey = sqlRepo.KeyInDb(detail.GetKey(mgPurgeParam.DetailFields, line));
             }
-
-            mgPurgeParam.KeyFound = srtKey != null;
-            string masterData = srtKey == null ? string.Empty : srtKey.Data;
+            mgPurgeParam.KeyFound = srtKey.Found;
+            string masterData = !srtKey.Found ? string.Empty : srtKey.Data;
 
             if (mgPurgeParam.KeyFound)
             {

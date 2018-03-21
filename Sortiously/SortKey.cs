@@ -9,5 +9,7 @@ namespace Sortiously
         public T Key { get; set; }
 
         public string Data { get; set; }
+
+        public bool Found { get; set; }
     }
 }

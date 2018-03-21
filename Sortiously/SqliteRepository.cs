@@ -114,9 +114,13 @@ namespace Sortiously
                         long id = (long)tmpId;
                         string sqlLiteData = (string)rdr["LineData"];
                         lastReadKey = rdr["SortKey"];
-                        srtKey = new SortKey<T>() { Id = id, Data = sqlLiteData, Key = lastReadKey };
+                        srtKey = new SortKey<T>() { Id = id, Data = sqlLiteData, Key = lastReadKey, Found = true };
 
                     }
+                }
+                if (srtKey == null)
+                {
+                    srtKey = new SortKey<T>() { Id = 0, Data = string.Empty, Key = theKey , Found = false };
                 }
                 return srtKey;
             }

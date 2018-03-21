@@ -61,7 +61,6 @@ namespace Sortiously
         private string GetCreateKeyIndexCmd()
         {
             return string.Format(@"CREATE INDEX sortKey_idx ON FileData (SortKey {0});CREATE INDEX id_idx ON FileData (Id);", sortDirection == SortDirection.Ascending ? "ASC" : "DESC");
-            //return string.Format(@"CREATE INDEX sortKey_idx ON FileData (SortKey {0});CREATE INDEX id_idx ON FileData (Id);", sortDirection == SortDirection.Ascending ? "ASC" : "DESC");
         }
 
         private void SqliteExecuteNonQuery(string sqlCmd)
