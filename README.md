@@ -5,10 +5,11 @@
 *Additionally can merge purge files. Documentation in **ReadMeMergePurge.txt***
 
 ##### *Dependencies:* System.Data.SQLite.Core
+*Uses SQLite to do the sorting according to the custom defined key.*
 
-* Sort more than one file at a time using multiple threads.
-* The original file is not overwritten or changed.
 * Very CPU and memory friendly.
+* The original file is not overwritten or changed.
+* Sort more than one file at a time using multiple threads.
 
 **Progress Reporting:** Use this knowing that it will slow down the process due to writing to console or other output source.  So if you want pure speed don't report the progress.
 
@@ -58,7 +59,7 @@ duplicates file will also include the header.
 Anytime during the process when an exception is encountered any files produced will be removed.  The exception will then be thrown so the consuming application can take the appropriate action.
 
 
-#### There are four methods each to sort a delimited or fixed width file. Each method has an options filter data and report progress.
+#### There are four methods each to sort a delimited or fixed width file. Each method has an optional data filter and progress reporting.
 
 1. Sort using a numeric key providing a column number for delimited files or starting position and length for fixed width files.
 2. Sort using a alphanumeric key providing a column number and length for delimited files or starting position and length for fixed width files.
