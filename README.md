@@ -285,8 +285,10 @@ Anytime during the process when an exception is encountered any files produced w
             string key = fields[7].Trim() + fields[6].Trim();
             if (string.IsNullOrWhiteSpace(key))
             {
+                //will be be filtered out
                 return false;
             }
+            //will not be filtered out
             return true;
         }
 
