@@ -4,6 +4,14 @@
 
 *Additionally can merge purge files. Documentation in **ReadMeMergePurge.txt***
 
+### Installing Sortiously ##
+
+Use [NuGet](https://www.nuget.org) to install. Run the following command 
+in the [Package Manager Console](http://docs.nuget.org/consume/package-manager-console).
+
+```
+PM> Install-Package Sortiously
+```
 ##### *Dependencies:* System.Data.SQLite.Core
 *Uses SQLite to do the sorting according to the custom defined key.*
 
@@ -15,27 +23,31 @@
 
 #### The progress report object:
 
-    public class SortProgress
-    {
-        //true when reading the file.
-        public bool Reading { get; set; }
-        //true when writing the file
-        public bool Writing { get; set; }
-        //the line number of the corresponding operation reading or writing;
-        public int Counter { get; set; }
-    }
+```csharp
+public class SortProgress
+{
+    //true when reading the file.
+    public bool Reading { get; set; }
+    //true when writing the file
+    public bool Writing { get; set; }
+    //the line number of the corresponding operation reading or writing;
+    public int Counter { get; set; }
+}
+ ```
 
 #### All functions return a SortResults instance.
 
-    public class SortResults
-    {
-        public int LinesRead { get; set; }
-        public int LinesSorted { get; set; }
-        public int Duplicates { get; set; }
-        public int Filtered { get; set; }
-        public string SortedFilePath { get; set; }
-        public string DuplicatesFilePath { get; set; }
-    }
+```csharp
+public class SortResults
+{
+    public int LinesRead { get; set; }
+    public int LinesSorted { get; set; }
+    public int Duplicates { get; set; }
+    public int Filtered { get; set; }
+    public string SortedFilePath { get; set; }
+    public string DuplicatesFilePath { get; set; }
+}
+```
 
 **LinesRead:** The number of lines read minus the header if included.
 
@@ -70,227 +82,246 @@ Anytime during the process when an exception is encountered any files produced w
 
 ##### Sorts a delimited file given a numeric key.
 
-    public static SortResults SortDelimitedByNumericKey(
-                                   string sourcefilePath,
-                                   Func<string[], string, bool> dataFilter = null,
-                                   string destinationFolder = null,
-                                   string delimiter = Constants.Delimiters.Comma,
-                                   bool hasHeader = true,
-                                   int keyColumn = 0,
-                                   bool isUniqueKey = false,
-                                   bool returnDuplicates = false,
-                                   SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+```csharp
+public static SortResults SortDelimitedByNumericKey(
+                               string sourcefilePath,
+                               Func<string[], string, bool> dataFilter = null,
+                               string destinationFolder = null,
+                               string delimiter = Constants.Delimiters.Comma,
+                               bool hasHeader = true,
+                               int keyColumn = 0,
+                               bool isUniqueKey = false,
+                               bool returnDuplicates = false,
+                               SortDirection sortDir = SortDirection.Ascending,
+                               Action<SortProgress> progress = null)
 
-
+```
 
 ##### Sorts a delimited file given a alphanumeric key.
 
-    public static SortResults SortDelimitedByAlphaNumKey(
-                                   string sourcefilePath,
-                                   Func<string[], string, bool> dataFilter = null,
-                                   string destinationFolder = null,
-                                   string delimiter = Constants.Delimiters.Comma,
-                                   bool hasHeader = true,
-                                   int keyColumn = 0,
-                                   int keyLength = 15,
-                                   bool isUniqueKey = false,
-                                   bool returnDuplicates = false,
-                                   SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+```csharp
+public static SortResults SortDelimitedByAlphaNumKey(
+                               string sourcefilePath,
+                               Func<string[], string, bool> dataFilter = null,
+                               string destinationFolder = null,
+                               string delimiter = Constants.Delimiters.Comma,
+                               bool hasHeader = true,
+                               int keyColumn = 0,
+                               int keyLength = 15,
+                               bool isUniqueKey = false,
+                               bool returnDuplicates = false,
+                               SortDirection sortDir = SortDirection.Ascending,
+                               Action<SortProgress> progress = null)
+```
 
 ##### Sorts a delimited file given a numeric key.
 
-    public static SortResults SortDelimitedByNumericKey(
-                                   string sourcefilePath,
-                                   Func<string[], string, long> getKey,
-                                   Func<string[], string, bool> dataFilter = null,
-                                   string destinationFolder = null,
-                                   string delimiter = Constants.Delimiters.Comma,
-                                   bool hasHeader = true,
-                                   bool isUniqueKey = false,
-                                   bool returnDuplicates = false,
-                                   SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+```csharp
+public static SortResults SortDelimitedByNumericKey(
+                               string sourcefilePath,
+                               Func<string[], string, long> getKey,
+                               Func<string[], string, bool> dataFilter = null,
+                               string destinationFolder = null,
+                               string delimiter = Constants.Delimiters.Comma,
+                               bool hasHeader = true,
+                               bool isUniqueKey = false,
+                               bool returnDuplicates = false,
+                               SortDirection sortDir = SortDirection.Ascending,
+                               Action<SortProgress> progress = null)
+```
 
 ##### Sorts a delimited file given a alphanumeric key.
 
-    public static SortResults SortDelimitedByAlphaNumKey(
-                                   string sourcefilePath,
-                                   Func<string[], string, string> getKey,
-                                   Func<string[], string, bool> dataFilter = null,
-                                   string destinationFolder = null,
-                                   string delimiter = Constants.Delimiters.Comma,
-                                   bool hasHeader = true,
-                                   bool isUniqueKey = false,
-                                   bool returnDuplicates = false,
-                                   SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
-
-
-##### Sorts a fixed width file given a numeric key.
-
-    public static SortResults SortFixedWidthByNumericKey(
-                                   string sourcefilePath,
-                                   Func<string, bool> dataFilter = null,
-                                   string destinationFolder = null,
-                                   bool hasHeader = true,
-                                   FixedWidthKey keyDef = null,
-                                   bool isUniqueKey = false,
-                                   bool returnDuplicates = false,
-                                   SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
-
-##### Sorts a fixed width file given a alphanumeric key.
-
-    public static SortResults SortFixedWidthByAlphaNumKey(
-                                   string sourcefilePath,
-                                   Func<string, bool> dataFilter = null,
-                                   string destinationFolder = null,
-                                   bool hasHeader = true,
-                                   FixedWidthKey keyDef = null,
-                                   bool isUniqueKey = false,
-                                   bool returnDuplicates = false,
-                                   SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+```csharp
+public static SortResults SortDelimitedByAlphaNumKey(
+                               string sourcefilePath,
+                               Func<string[], string, string> getKey,
+                               Func<string[], string, bool> dataFilter = null,
+                               string destinationFolder = null,
+                               string delimiter = Constants.Delimiters.Comma,
+                               bool hasHeader = true,
+                               bool isUniqueKey = false,
+                               bool returnDuplicates = false,
+                               SortDirection sortDir = SortDirection.Ascending,
+                               Action<SortProgress> progress = null)
+```
 
 ##### Sorts a fixed width file given a numeric key.
 
-    public static SortResults SortFixedWidthByNumericKey(
-                                   string sourcefilePath,
-                                   Func<string, long> getKey,
-                                   Func<string, bool> dataFilter = null,
-                                   string destinationFolder = null,
-                                   bool hasHeader = true,
-                                   bool isUniqueKey = false,
-                                   bool returnDuplicates = false,
-                                   SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
-
+```csharp
+ public static SortResults SortFixedWidthByNumericKey(
+                                string sourcefilePath,
+                                Func<string, bool> dataFilter = null,
+                                string destinationFolder = null,
+                                bool hasHeader = true,
+                                FixedWidthKey keyDef = null,
+                                bool isUniqueKey = false,
+                                bool returnDuplicates = false,
+                                SortDirection sortDir = SortDirection.Ascending,
+                                Action<SortProgress> progress = null)
+```
 
 ##### Sorts a fixed width file given a alphanumeric key.
 
-    public static SortResults SortFixedWidthByAlphaNumKey(
-                                   string sourcefilePath,
-                                   Func<string, string> getKey,
-                                   Func<string, bool> dataFilter = null,
-                                   string destinationFolder = null,
-                                   bool hasHeader = true,
-                                   bool isUniqueKey = false,
-                                   bool returnDuplicates = false,
-                                   SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+```csharp
+public static SortResults SortFixedWidthByAlphaNumKey(
+                               string sourcefilePath,
+                               Func<string, bool> dataFilter = null,
+                               string destinationFolder = null,
+                               bool hasHeader = true,
+                               FixedWidthKey keyDef = null,
+                               bool isUniqueKey = false,
+                               bool returnDuplicates = false,
+                               SortDirection sortDir = SortDirection.Ascending,
+                               Action<SortProgress> progress = null)
+```
+
+##### Sorts a fixed width file given a numeric key.
+
+```csharp
+public static SortResults SortFixedWidthByNumericKey(
+                               string sourcefilePath,
+                               Func<string, long> getKey,
+                               Func<string, bool> dataFilter = null,
+                               string destinationFolder = null,
+                               bool hasHeader = true,
+                               bool isUniqueKey = false,
+                               bool returnDuplicates = false,
+                               SortDirection sortDir = SortDirection.Ascending,
+                               Action<SortProgress> progress = null)
+```
+
+##### Sorts a fixed width file given a alphanumeric key.
+
+```csharp
+public static SortResults SortFixedWidthByAlphaNumKey(
+                               string sourcefilePath,
+                               Func<string, string> getKey,
+                               Func<string, bool> dataFilter = null,
+                               string destinationFolder = null,
+                               bool hasHeader = true,
+                               bool isUniqueKey = false,
+                               bool returnDuplicates = false,
+                               SortDirection sortDir = SortDirection.Ascending,
+                               Action<SortProgress> progress = null)
+```
 
 #### Examples:
 
-        SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
-                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
-                destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
-                delimiter: Delimiters.Tab,
-                keyColumn: 2,
-                keyLength: 11,
-                isUniqueKey: true,
-                sortDir: SortDirection.Descending);
-
+```csharp
+SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
+        sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
+        destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
+        delimiter: Delimiters.Tab,
+        keyColumn: 2,
+        keyLength: 11,
+        isUniqueKey: true,
+        sortDir: SortDirection.Descending);
+```
 
 #### Example showing how to implement the progress reporting.
 
-            SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
-                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
-                destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
-                delimiter: Delimiters.Tab,
-                keyColumn: 2,
-                keyLength: 11,
-                isUniqueKey: true,
-                sortDir: SortDirection.Descending,
-                progress: ReportProgress);
+```csharp
+SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
+    sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
+    destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
+    delimiter: Delimiters.Tab,
+    keyColumn: 2,
+    keyLength: 11,
+    isUniqueKey: true,
+    sortDir: SortDirection.Descending,
+    progress: ReportProgress);
 
-        static void ReportProgress(SortProgress srtProgress)
-        {
-            if (srtProgress.Reading)
-            {
-                Console.Write("\rReading : " + srtProgress.Counter.ToString().PadRight(30,' '));
-            }
-            else
-            {
-                Console.Write("\rWriting : " + srtProgress.Counter.ToString().PadRight(30, ' '));
-            }
-        }
+static void ReportProgress(SortProgress srtProgress)
+{
+    if (srtProgress.Reading)
+    {
+        Console.Write("\rReading : " + srtProgress.Counter.ToString().PadRight(30,' '));
+    }
+    else
+    {
+        Console.Write("\rWriting : " + srtProgress.Counter.ToString().PadRight(30, ' '));
+    }
+}
+```
 
 
 #### Example of custom key construction with a lambda expression
 
-        SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
-                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
-                getKey: (fields, line) => fields[2].Trim().PadLeft(11, '0'),
-                destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
-                delimiter: Delimiters.Tab,
-                isUniqueKey: true,
-                sortDir: SortDirection.Ascending);
+```csharp
+SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
+        sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
+        getKey: (fields, line) => fields[2].Trim().PadLeft(11, '0'),
+        destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
+        delimiter: Delimiters.Tab,
+        isUniqueKey: true,
+        sortDir: SortDirection.Ascending);
 
 
 
-       SortResults srtResults = SortFile.SortFixedWidthByAlphaNumKey(
-                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMeFW.txt",
-                destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
-                hasHeader: false,
-                keyDef: new FixedWidthKey { StartPos = 0, KeyLength = 12 },
-                isUniqueKey: false,
-                sortDir: SortDirection.Ascending);
-
+SortResults srtResults = SortFile.SortFixedWidthByAlphaNumKey(
+         sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMeFW.txt",
+         destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
+         hasHeader: false,
+         keyDef: new FixedWidthKey { StartPos = 0, KeyLength = 12 },
+         isUniqueKey: false,
+         sortDir: SortDirection.Ascending);
+```
 
 #### Example of custom key construction
 
-       SortResults srtResults = SortFile.SortFixedWidthByAlphaNumKey(
-                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMeFW.txt",
-                getKey: GetFixedKey,
-                destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
-                hasHeader: false,
-                isUniqueKey: false,
-                sortDir: SortDirection.Ascending);
+```csharp
+SortResults srtResults = SortFile.SortFixedWidthByAlphaNumKey(
+         sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMeFW.txt",
+         getKey: GetFixedKey,
+         destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
+         hasHeader: false,
+         isUniqueKey: false,
+         sortDir: SortDirection.Ascending);
 
-        static string GetFixedKey(string line)
-        {
-            return line.Substring(0, 12).Trim().PadLeft(12, '0');
-        }
-
+ static string GetFixedKey(string line)
+ {
+     return line.Substring(0, 12).Trim().PadLeft(12, '0');
+ }
+```
 
 
 #### Example of custom key construction and data filtering
 
-        static void SortDelimitedGetKeyTestCsv()
-        {
-            SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
-                sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortIt.csv",
-                getKey: GetNameKey,
-                dataFilter: FilterOutBlankNames,
-                destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
-                delimiter: Delimiters.Comma,
-                isUniqueKey: false,
-                sortDir: SortDirection.Ascending);
+```csharp
+ static void SortDelimitedGetKeyTestCsv()
+ {
+     SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
+         sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortIt.csv",
+         getKey: GetNameKey,
+         dataFilter: FilterOutBlankNames,
+         destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
+         delimiter: Delimiters.Comma,
+         isUniqueKey: false,
+         sortDir: SortDirection.Ascending);
 
-            Console.WriteLine("Lines Read  : " + srtResults.LinesRead.ToString());
-            Console.WriteLine("Lines Sorted: " + srtResults.LinesSorted.ToString());
-        }
+     Console.WriteLine("Lines Read  : " + srtResults.LinesRead.ToString());
+     Console.WriteLine("Lines Sorted: " + srtResults.LinesSorted.ToString());
+ }
 
-        static string GetNameKey(string[] fields, string line)
-        {
-           //fields[7] = last name, fields[6] = first name
-           string key = string.Join(" ",fields[7].Trim().ToLower(),fields[6].Trim().ToLower());
-           return key;
-        }
+ static string GetNameKey(string[] fields, string line)
+ {
+    //fields[7] = last name, fields[6] = first name
+    string key = string.Join(" ",fields[7].Trim().ToLower(),fields[6].Trim().ToLower());
+    return key;
+ }
 
-        static bool FilterOutBlankNames(string[] fields, string line)
-        {
-            string key = fields[7].Trim() + fields[6].Trim();
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                //will be be filtered out
-                return false;
-            }
-            //will not be filtered out
-            return true;
-        }
-
+ static bool FilterOutBlankNames(string[] fields, string line)
+ {
+     string key = fields[7].Trim() + fields[6].Trim();
+     if (string.IsNullOrWhiteSpace(key))
+     {
+         //will be be filtered out
+         return false;
+     }
+     //will not be filtered out
+     return true;
+ }
+```
 
 MIT License.

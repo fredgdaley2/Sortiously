@@ -2,8 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <Authors>Fred Daley</Authors>
-    <Description>Sort large and small delimited and fixed width files.  Merge purge two files.</Description>
+    <Authors>fredthedev</Authors>
+    <Description>Sort large and small delimited and fixed-width files.  Merge purge two files.</Description>
+    <PackageId>Sortiously</PackageId>
+    <Copyright>2018 fredthedev</Copyright>
+    <PackageProjectUrl>https://github.com/fredgdaley2/Sortiously</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/fredgdaley2/Sortiously</RepositoryUrl>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageLicenseUrl>https://github.com/fredgdaley2/Sortiously/blob/master/License.txt</PackageLicenseUrl>
+    <PackageTags>sort delimited fixedwidth csharp sorting etl data-filtering merge purge csv parser</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
