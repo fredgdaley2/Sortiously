@@ -324,4 +324,62 @@ SortResults srtResults = SortFile.SortFixedWidthByAlphaNumKey(
  }
 ```
 
+#### Miscellaneous
+
+Import Sortiously.Framework namespace to gain access to the delimiters.
+
+```csharp
+namespace Sortiously.Framework
+{
+
+    public static partial class Constants
+    {
+        public static class Delimiters
+        {
+            public const string Comma = ",";
+            public const string Tab = "\t";
+            public const string Pipe = "|";
+            public const string SemiColon = ";";
+            public const string Caret = "^";
+        }
+    }
+}
+```
+Import Sortiously.StringExtns namespace to gain access to some helper extensions
+
+```csharp
+ public static string LeftAlign(this string value, int totWidth)
+ {
+     return value.PadRight(totWidth);
+ }
+
+ public static string RightAlign(this string value, int totWidth)
+ {
+     return value.PadLeft(totWidth);
+ }
+
+ public static string TruncateFixed(this string value, int totWidth)
+ {
+     if (value.Length > totWidth)
+     {
+         value = value.Substring(0, totWidth);
+     }
+     return value;
+ }
+
+ public static string PadKeyWithZero(this string value, int keyLength)
+ {
+     return value.Trim().PadLeft(keyLength, '0');
+ }
+
+ public static string PadKeyWithA(this string value, int keyLength)
+ {
+     return value.Trim().PadRight(keyLength, 'A');
+ }
+
+```
+
+*Additionally there are file parsing methods in the **FileParsers.cs** class.*
+
+
 MIT License.
