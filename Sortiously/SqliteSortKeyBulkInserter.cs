@@ -4,21 +4,22 @@ using System.Data.SQLite;
 
 namespace Sortiously
 {
-    public class SqliteSortKeyBulkInserter<T> : IDisposable
+    internal class SqliteSortKeyBulkInserter<T> : IDisposable
     {
-        private readonly int maxBatchSize = 250000;
+        private readonly int MaxBatchSize;
         private bool disposed;
         private readonly bool hasUniqueKey;
         private readonly SortDirection sortDirection;
         private readonly SQLiteConnection dbConnection;
         private List<SortKey<T>> SortKeyList { get; }
 
-        public SqliteSortKeyBulkInserter(string connStr, SortDirection sortDir = SortDirection.Ascending, bool uniqueKey = false)
+        public SqliteSortKeyBulkInserter(string connStr, SortDirection sortDir = SortDirection.Ascending, bool uniqueKey = false, int maxBatchSize = 250000)
         {
             SortKeyList = new List<SortKey<T>>();
             hasUniqueKey = uniqueKey;
             sortDirection = sortDir;
             dbConnection = new SQLiteConnection(@"Data Source=" + connStr);
+            MaxBatchSize = maxBatchSize;
             dbConnection.Open();
             CreateStringNumTable();
 
@@ -87,7 +88,7 @@ namespace Sortiously
 
         private void InsertIfCountMatchesMax()
         {
-            if (SortKeyList.Count == maxBatchSize)
+            if (SortKeyList.Count == MaxBatchSize)
             {
                 InsertBulk();
             }

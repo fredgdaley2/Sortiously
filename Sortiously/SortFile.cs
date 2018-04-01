@@ -20,6 +20,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         public static SortResults SortDelimitedByNumericKey(string sourcefilePath,
                                    Func<string[], string, bool> dataFilter = null,
                                    string destinationFolder = null,
@@ -29,7 +30,8 @@ namespace Sortiously
                                    bool isUniqueKey = false,
                                    bool returnDuplicates = false,
                                    SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+                                   Action<SortProgress> progress = null,
+                                   int maxBatchSize = 250000)
         {
 
             return SortDelimitedByKeyCore<long>(sourcefilePath: sourcefilePath,
@@ -41,7 +43,8 @@ namespace Sortiously
                                              isUniqueKey: isUniqueKey,
                                              returnDuplicates: returnDuplicates,
                                              sortDir: sortDir,
-                                             progress: progress);
+                                             progress: progress,
+                                             maxBatchSize: maxBatchSize);
         }
 
 
@@ -60,6 +63,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         public static SortResults SortDelimitedByAlphaNumKey(string sourcefilePath,
                                    Func<string[], string, bool> dataFilter = null,
                                    string destinationFolder = null,
@@ -70,7 +74,9 @@ namespace Sortiously
                                    bool isUniqueKey = false,
                                    bool returnDuplicates = false,
                                    SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+                                   Action<SortProgress> progress = null,
+                                   int maxBatchSize = 250000)
+
         {
             return SortDelimitedByKeyCore<string>(sourcefilePath: sourcefilePath,
                                             getKey: (fields, line) => fields[keyColumn].PadKeyWithZero(keyLength),
@@ -81,7 +87,8 @@ namespace Sortiously
                                             isUniqueKey: isUniqueKey,
                                             returnDuplicates: returnDuplicates,
                                             sortDir: sortDir,
-                                            progress: progress);
+                                            progress: progress,
+                                            maxBatchSize: maxBatchSize);
         }
 
         /// <summary>
@@ -97,6 +104,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         public static SortResults SortDelimitedByNumericKey(
                                    string sourcefilePath,
                                    Func<string[], string, long> getKey,
@@ -107,7 +115,9 @@ namespace Sortiously
                                    bool isUniqueKey = false,
                                    bool returnDuplicates = false,
                                    SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+                                   Action<SortProgress> progress = null,
+                                   int maxBatchSize = 250000)
+
         {
 
 
@@ -120,7 +130,8 @@ namespace Sortiously
                                              isUniqueKey: isUniqueKey,
                                              returnDuplicates: returnDuplicates,
                                              sortDir: sortDir,
-                                             progress: progress);
+                                             progress: progress,
+                                             maxBatchSize: maxBatchSize);
         }
 
 
@@ -137,6 +148,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         public static SortResults SortDelimitedByAlphaNumKey(string sourcefilePath,
                                    Func<string[], string, string> getKey,
                                    Func<string[], string, bool> dataFilter = null,
@@ -146,7 +158,9 @@ namespace Sortiously
                                    bool isUniqueKey = false,
                                    bool returnDuplicates = false,
                                    SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+                                   Action<SortProgress> progress = null,
+                                   int maxBatchSize = 250000)
+
         {
 
             return SortDelimitedByKeyCore<string>(sourcefilePath: sourcefilePath,
@@ -158,7 +172,8 @@ namespace Sortiously
                                             isUniqueKey: isUniqueKey,
                                             returnDuplicates: returnDuplicates,
                                             sortDir: sortDir,
-                                            progress: progress);
+                                            progress: progress,
+                                            maxBatchSize: maxBatchSize);
 
         }
 
@@ -176,6 +191,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         internal static SortResults SortDelimitedByKeyCore<T>(
                                    string sourcefilePath,
                                    Func<string[], string, T> getKey,
@@ -188,9 +204,10 @@ namespace Sortiously
                                    SortDirection sortDir = SortDirection.Ascending,
                                    Action<SortProgress> progress = null,
                                    bool deleteDbConnPath = true,
-                                   bool writeOutSortFile = true)
+                                   bool writeOutSortFile = true,
+                                   int maxBatchSize = 250000)
         {
-            ArgumentValidation<T>(sourcefilePath, getKey,  delimiter,  destinationFolder);
+            ArgumentValidation<T>(sourcefilePath, getKey,  delimiter,  destinationFolder, maxBatchSize);
             SortVars srtVars = new SortVars(sourcefilePath, destinationFolder);
             SortResults srtResults = new SortResults(sourcefilePath, srtVars.DestFolder, srtVars.DbConnPath);
             SortProgress srtProgress = new SortProgress();
@@ -199,7 +216,7 @@ namespace Sortiously
                 srtResults.DeleteDuplicatesFile();
                 int lineCount = 1;
                 using (StreamReader reader = new StreamReader(sourcefilePath))
-                using (SqliteSortKeyBulkInserter<T> sortBulkInserter = new SqliteSortKeyBulkInserter<T>(srtVars.DbConnPath, uniqueKey: isUniqueKey))
+                using (SqliteSortKeyBulkInserter<T> sortBulkInserter = new SqliteSortKeyBulkInserter<T>(srtVars.DbConnPath, uniqueKey: isUniqueKey, maxBatchSize: maxBatchSize))
                 {
                     string line;
                     srtVars.Header = GetHeader(hasHeader, reader);
@@ -262,6 +279,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         public static SortResults SortFixedWidthByNumericKey(string sourcefilePath,
                                    Func<string, bool> dataFilter = null,
                                    string destinationFolder = null,
@@ -270,7 +288,9 @@ namespace Sortiously
                                    bool isUniqueKey = false,
                                    bool returnDuplicates = false,
                                    SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+                                   Action<SortProgress> progress = null,
+                                   int maxBatchSize = 250000)
+
         {
             return SortFixedWidthByKeyCore<long>(sourcefilePath: sourcefilePath,
                                    getKey: (line) => long.Parse(line.Substring(keyDef.StartPos, keyDef.KeyLength).Trim()),
@@ -280,7 +300,8 @@ namespace Sortiously
                                    isUniqueKey: isUniqueKey,
                                    returnDuplicates: returnDuplicates,
                                    sortDir: sortDir,
-                                   progress: progress);
+                                   progress: progress,
+                                   maxBatchSize: maxBatchSize);
 
         }
 
@@ -296,6 +317,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         public static SortResults SortFixedWidthByAlphaNumKey(string sourcefilePath,
                                    Func<string, bool> dataFilter = null,
                                    string destinationFolder = null,
@@ -304,7 +326,8 @@ namespace Sortiously
                                    bool isUniqueKey = false,
                                    bool returnDuplicates = false,
                                    SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+                                   Action<SortProgress> progress = null,
+                                   int maxBatchSize = 250000)
         {
             return SortFixedWidthByKeyCore<string>(sourcefilePath: sourcefilePath,
                                    getKey: (line) => line.Substring(keyDef.StartPos, keyDef.KeyLength).PadKeyWithZero(keyDef.KeyLength),
@@ -314,7 +337,8 @@ namespace Sortiously
                                    isUniqueKey: isUniqueKey,
                                    returnDuplicates: returnDuplicates,
                                    sortDir: sortDir,
-                                   progress: progress);
+                                   progress: progress,
+                                   maxBatchSize: maxBatchSize);
 
         }
 
@@ -331,6 +355,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         public static SortResults SortFixedWidthByNumericKey(string sourcefilePath,
                                    Func<string, long> getKey,
                                    Func<string, bool> dataFilter = null,
@@ -339,7 +364,8 @@ namespace Sortiously
                                    bool isUniqueKey = false,
                                    bool returnDuplicates = false,
                                    SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+                                   Action<SortProgress> progress = null,
+                                   int maxBatchSize = 250000)
 
         {
             return SortFixedWidthByKeyCore<long>(sourcefilePath: sourcefilePath,
@@ -350,7 +376,8 @@ namespace Sortiously
                                    isUniqueKey: isUniqueKey,
                                    returnDuplicates: returnDuplicates,
                                    sortDir: sortDir,
-                                   progress: progress);
+                                   progress: progress,
+                                   maxBatchSize: maxBatchSize);
         }
 
 
@@ -366,6 +393,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         internal static SortResults SortFixedWidthByKeyCore<T>(string sourcefilePath,
                                    Func<string, T> getKey,
                                    Func<string, bool> dataFilter = null,
@@ -376,10 +404,11 @@ namespace Sortiously
                                    SortDirection sortDir = SortDirection.Ascending,
                                    Action<SortProgress> progress = null,
                                    bool deleteDbConnPath = true,
-                                   bool writeOutSortFile = true)
+                                   bool writeOutSortFile = true,
+                                   int maxBatchSize = 250000)
 
         {
-            ArgumentValidation<T>(sourcefilePath, getKey, destinationFolder);
+            ArgumentValidation<T>(sourcefilePath, getKey, destinationFolder, maxBatchSize);
             SortVars srtVars = new SortVars(sourcefilePath, destinationFolder);
             SortResults srtResults = new SortResults(sourcefilePath, srtVars.DestFolder, srtVars.DbConnPath);
             SortProgress srtProgress = new SortProgress();
@@ -388,7 +417,7 @@ namespace Sortiously
                 srtResults.DeleteDuplicatesFile();
                 int lineCount = 1;
                 using (StreamReader reader = new StreamReader(sourcefilePath))
-                using (SqliteSortKeyBulkInserter<T> sortBulkInserter = new SqliteSortKeyBulkInserter<T>(srtVars.DbConnPath, uniqueKey: isUniqueKey))
+                using (SqliteSortKeyBulkInserter<T> sortBulkInserter = new SqliteSortKeyBulkInserter<T>(srtVars.DbConnPath, uniqueKey: isUniqueKey, maxBatchSize: maxBatchSize))
 
                 {
                     string line;
@@ -446,6 +475,7 @@ namespace Sortiously
         /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true.</param>
         /// <param name="sortDir">The sort direction of the key.</param>
         /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
         public static SortResults SortFixedWidthByAlphaNumKey(string sourcefilePath,
                                    Func<string, string> getKey,
                                    Func<string, bool> dataFilter = null,
@@ -454,7 +484,8 @@ namespace Sortiously
                                    bool isUniqueKey = false,
                                    bool returnDuplicates = false,
                                    SortDirection sortDir = SortDirection.Ascending,
-                                   Action<SortProgress> progress = null)
+                                   Action<SortProgress> progress = null,
+                                   int maxBatchSize = 250000)
 
         {
             return SortFixedWidthByKeyCore<string>(sourcefilePath: sourcefilePath,
@@ -465,7 +496,8 @@ namespace Sortiously
                                    isUniqueKey: isUniqueKey,
                                    returnDuplicates: returnDuplicates,
                                    sortDir: sortDir,
-                                   progress: progress);
+                                   progress: progress,
+                                   maxBatchSize: maxBatchSize);
 
 
         }
@@ -498,7 +530,7 @@ namespace Sortiously
             return hdr;
         }
 
-        private static void ArgumentValidation<T>(string sourcefilePath, Func<string[], string, T> getKey, string delimiter, string destinationFolder)
+        private static void ArgumentValidation<T>(string sourcefilePath, Func<string[], string, T> getKey, string delimiter, string destinationFolder, int maxBatchSize)
         {
             if (getKey == null)
             {
@@ -506,15 +538,17 @@ namespace Sortiously
             }
             ArgumentValidation(delimiter);
             ArgumentValidation(sourcefilePath, destinationFolder);
+            ArgumentValidation(maxBatchSize);
         }
 
-        private static void ArgumentValidation<T>(string sourcefilePath, Func<string, T> getKey, string destinationFolder)
+        private static void ArgumentValidation<T>(string sourcefilePath, Func<string, T> getKey, string destinationFolder, int maxBatchSize)
         {
             if (getKey == null)
             {
                 throw new ArgumentNullException(SortHelpers.GetParameterName(new { getKey }), "A GetKey function must be defined.");
             }
             ArgumentValidation(sourcefilePath, destinationFolder);
+            ArgumentValidation(maxBatchSize);
         }
 
         private static void ArgumentValidation(string sourcefilePath, string destinationFolder)
@@ -543,5 +577,18 @@ namespace Sortiously
 
         }
 
+        private static void ArgumentValidation(int maxBatchSize)
+        {
+            if (maxBatchSize <= 0)
+            {
+                throw new ArgumentNullException(SortHelpers.GetParameterName(new { maxBatchSize }), "The maxBatchSize must be greater than zero.");
+            } else if (maxBatchSize > int.MaxValue)
+            {
+                throw new ArgumentNullException(SortHelpers.GetParameterName(new { maxBatchSize }), "The maxBatchSize can not be greater than integer maximum value.");
+
+            }
+
+
+        }
     }
 }

@@ -93,8 +93,8 @@ public static SortResults SortDelimitedByNumericKey(
                                bool isUniqueKey = false,
                                bool returnDuplicates = false,
                                SortDirection sortDir = SortDirection.Ascending,
-                               Action<SortProgress> progress = null)
-
+                               Action<SortProgress> progress = null,
+                               int maxBatchSize = 250000)
 ```
 
 ##### Sorts a delimited file given a alphanumeric key.
@@ -111,7 +111,8 @@ public static SortResults SortDelimitedByAlphaNumKey(
                                bool isUniqueKey = false,
                                bool returnDuplicates = false,
                                SortDirection sortDir = SortDirection.Ascending,
-                               Action<SortProgress> progress = null)
+                               Action<SortProgress> progress = null,
+                               int maxBatchSize = 250000)
 ```
 
 ##### Sorts a delimited file given a numeric key.
@@ -127,7 +128,8 @@ public static SortResults SortDelimitedByNumericKey(
                                bool isUniqueKey = false,
                                bool returnDuplicates = false,
                                SortDirection sortDir = SortDirection.Ascending,
-                               Action<SortProgress> progress = null)
+                               Action<SortProgress> progress = null,
+                               int maxBatchSize = 250000)
 ```
 
 ##### Sorts a delimited file given a alphanumeric key.
@@ -143,22 +145,24 @@ public static SortResults SortDelimitedByAlphaNumKey(
                                bool isUniqueKey = false,
                                bool returnDuplicates = false,
                                SortDirection sortDir = SortDirection.Ascending,
-                               Action<SortProgress> progress = null)
+                               Action<SortProgress> progress = null,
+                               int maxBatchSize = 250000)
 ```
 
 ##### Sorts a fixed width file given a numeric key.
 
 ```csharp
  public static SortResults SortFixedWidthByNumericKey(
-                                string sourcefilePath,
-                                Func<string, bool> dataFilter = null,
-                                string destinationFolder = null,
-                                bool hasHeader = true,
-                                FixedWidthKey keyDef = null,
-                                bool isUniqueKey = false,
-                                bool returnDuplicates = false,
-                                SortDirection sortDir = SortDirection.Ascending,
-                                Action<SortProgress> progress = null)
+                               string sourcefilePath,
+                               Func<string, bool> dataFilter = null,
+                               string destinationFolder = null,
+                               bool hasHeader = true,
+                               FixedWidthKey keyDef = null,
+                               bool isUniqueKey = false,
+                               bool returnDuplicates = false,
+                               SortDirection sortDir = SortDirection.Ascending,
+                               Action<SortProgress> progress = null,
+                               int maxBatchSize = 250000)
 ```
 
 ##### Sorts a fixed width file given a alphanumeric key.
@@ -173,7 +177,8 @@ public static SortResults SortFixedWidthByAlphaNumKey(
                                bool isUniqueKey = false,
                                bool returnDuplicates = false,
                                SortDirection sortDir = SortDirection.Ascending,
-                               Action<SortProgress> progress = null)
+                               Action<SortProgress> progress = null,
+                               int maxBatchSize = 250000)
 ```
 
 ##### Sorts a fixed width file given a numeric key.
@@ -188,7 +193,8 @@ public static SortResults SortFixedWidthByNumericKey(
                                bool isUniqueKey = false,
                                bool returnDuplicates = false,
                                SortDirection sortDir = SortDirection.Ascending,
-                               Action<SortProgress> progress = null)
+                               Action<SortProgress> progress = null,
+                               int maxBatchSize = 250000)
 ```
 
 ##### Sorts a fixed width file given a alphanumeric key.
@@ -203,10 +209,13 @@ public static SortResults SortFixedWidthByAlphaNumKey(
                                bool isUniqueKey = false,
                                bool returnDuplicates = false,
                                SortDirection sortDir = SortDirection.Ascending,
-                               Action<SortProgress> progress = null)
+                               Action<SortProgress> progress = null,
+                               int maxBatchSize = 250000)
 ```
 
 #### Examples:
+
+#### Basic usage
 
 ```csharp
 SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
@@ -217,6 +226,20 @@ SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
         keyLength: 11,
         isUniqueKey: true,
         sortDir: SortDirection.Descending);
+```
+#### Defining the maxBatchSize for the batch insertion _default is 250000_
+_May need to adjust when encountering an out of memory exception._
+
+```csharp
+SortResults srtResults = SortFile.SortDelimitedByAlphaNumKey(
+        sourcefilePath: @"C:\TempGarbage\FilesToProcess\SortMe.tsv",
+        destinationFolder: @"C:\TempGarbage\FilesToProcess\sorted",
+        delimiter: Delimiters.Tab,
+        keyColumn: 2,
+        keyLength: 11,
+        isUniqueKey: true,
+        sortDir: SortDirection.Descending,
+        maxBatchSize: 100000);
 ```
 
 #### Example showing how to implement the progress reporting.

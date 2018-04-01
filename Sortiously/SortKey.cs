@@ -2,7 +2,7 @@
 
 namespace Sortiously
 {
-    public class SortKey<T>
+    internal class SortKey<T>
     {
         public long Id { get; set; }
 
