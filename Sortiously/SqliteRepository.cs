@@ -3,7 +3,7 @@ using System.Data.SQLite;
 
 namespace Sortiously
 {
-    public class SqliteRepository<T> : IDisposable
+    internal class SqliteRepository<T> : IDisposable
     {
         bool disposed;
         private readonly SQLiteConnection dbConnection;
