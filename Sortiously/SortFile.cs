@@ -502,6 +502,233 @@ namespace Sortiously
 
         }
 
+        /// <summary>
+        /// Sorts a delimited file by defined set of key definitions.
+        /// </summary>
+        /// <param name="sourcefilePath">Full path and file name of file to be sorted</param>
+        /// <param name="sortDefinitions">Define the keys values and sort directions</param>
+        /// <param name="setKeys">Action method to set the key values</param>
+        /// <param name="dataFilter">Function to filter out a data line (true to include data or false to exclude data)</param>
+        /// <param name="destinationFolder">Folder path where sorted and/or duplicate files will be place. (Uses folder of sourcefilePath when null)</param>
+        /// <param name="delimiter">Character delimiter</param>
+        /// <param name="hasHeader">Does the file have a header row</param>
+        /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true in any of the key definitions.</param>
+        /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
+        /// <returns></returns>
+        public static SortResults SortDelimitedByKeyDefinitions(
+                                   string sourcefilePath,
+                                   SortDefinitions sortDefinitions,
+                                   Action<string[], string, string[]> setKeys,
+                                   Func<string[], string, bool> dataFilter = null,
+                                   string destinationFolder = null,
+                                   string delimiter = Constants.Delimiters.Comma,
+                                   bool hasHeader = true,
+                                   bool returnDuplicates = false,
+                                   Action<SortProgress> progress = null,
+                                   int maxBatchSize = 250000)
+
+        {
+            return SortDelimitedByKeyDefCore(
+                                   sourcefilePath: sourcefilePath,
+                                   sortDefinitions: sortDefinitions,
+                                   setKeys: setKeys,
+                                   dataFilter: dataFilter,
+                                   destinationFolder: destinationFolder,
+                                   delimiter: delimiter,
+                                   hasHeader: hasHeader,
+                                   returnDuplicates: returnDuplicates,
+                                   progress: progress,
+                                   maxBatchSize: maxBatchSize);
+        }
+
+        internal static SortResults SortDelimitedByKeyDefCore(
+                                   string sourcefilePath,
+                                   SortDefinitions sortDefinitions,
+                                   Action<string[], string, string[]> setKeys,
+                                   Func<string[], string, bool> dataFilter = null,
+                                   string destinationFolder = null,
+                                   string delimiter = Constants.Delimiters.Comma,
+                                   bool hasHeader = true,
+                                   bool returnDuplicates = false,
+                                   Action<SortProgress> progress = null,
+                                   bool deleteDbConnPath = true,
+                                   bool writeOutSortFile = true,
+                                   int maxBatchSize = 250000)
+
+        {
+            ArgumentValidation(sourcefilePath, setKeys, delimiter, destinationFolder);
+            SortVars srtVars = new SortVars(sourcefilePath, destinationFolder);
+            SortResults srtResults = new SortResults(sourcefilePath, srtVars.DestFolder, srtVars.DbConnPath);
+            SortProgress srtProgress = new SortProgress();
+            try
+            {
+                srtResults.DeleteDuplicatesFile();
+                int lineCount = 1;
+                using (StreamReader reader = new StreamReader(sourcefilePath))
+                using (SqliteSortDefBulkInserter sortBulkInserter = new SqliteSortDefBulkInserter(srtVars.DbConnPath, sortDefinitions, maxBatchSize))
+                {
+                    string line;
+                    srtVars.Header = GetHeader(hasHeader, reader);
+                    srtProgress.InitReading();
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        srtResults.IncrementLinesRead();
+                        ReportReadProgress(progress, srtProgress, srtResults.LinesRead);
+                        FileParser.ParseDelimitedString(new StringReader(line), (fields, lNum) =>
+                        {
+                            if (dataFilter == null || dataFilter(fields, line))
+                            {
+
+                                string[] keyValues = new string[sortDefinitions.GetKeys().Count];
+                                setKeys(fields, line, keyValues);
+                                sortBulkInserter.Add(new SortKeyData { KeyValues = keyValues, Data = line + SortFileHelpers.EscapeByDelimiter(delimiter) });
+                                lineCount++;
+                            }
+                            else
+                            {
+                                srtResults.IncrementFiltered();
+                            }
+                        }, delimiter);
+                    }
+                    sortBulkInserter.InsertAnyLeftOvers();
+                    sortBulkInserter.AddUnUniqueIndex();
+                }
+                srtProgress.InitWriting();
+
+                if (writeOutSortFile)
+                {
+                    srtResults.WriteOutSorted(srtVars.DbConnPath, srtVars.Header, sortDefinitions, delimiter, returnDuplicates: returnDuplicates, dupesFilePath: srtResults.DuplicatesFilePath, progress: (counter) => { srtProgress.Counter = counter; if (progress != null) { progress(srtProgress); } }, deleteDb: deleteDbConnPath);
+                }
+                else
+                {
+                    srtResults.Header = srtVars.Header;
+                }
+
+
+                srtResults.DeleteDuplicatesFileIfNoDuplicates();
+            }
+            catch (Exception)
+            {
+                CleanUp(srtVars, srtResults);
+                srtProgress = null;
+                throw;
+            }
+            return srtResults;
+        }
+
+        /// <summary>
+        /// Sorts a fixed width file by defined set of key definitions.
+        /// </summary>
+        /// <param name="sourcefilePath">Full path and file name of file to be sorted</param>
+        /// <param name="sortDefinitions">Define the keys values and sort directions</param>
+        /// <param name="setKeys">Action method to set the key values</param>
+        /// <param name="dataFilter">Function to filter out a data line (true to include data or false to exclude data)</param>
+        /// <param name="destinationFolder">Folder path where sorted and/or duplicate files will be place. (Uses folder of sourcefilePath when null)</param>
+        /// <param name="hasHeader">Does the file have a header row</param>
+        /// <param name="returnDuplicates">If true duplicates will be written out to file only if isUniqueKey is true in any of the key definitions.</param>
+        /// <param name="progress">A method to report progress</param>
+        /// <param name="maxBatchSize">Control the max insert batch size</param>
+        /// <returns></returns>
+        public static SortResults SortFixedWidthByKeyDefinitions(string sourcefilePath,
+                                   SortDefinitions sortDefinitions,
+                                   Action<string, string[]> setKeys,
+                                   Func<string, bool> dataFilter = null,
+                                   string destinationFolder = null,
+                                   bool hasHeader = true,
+                                   bool returnDuplicates = false,
+                                   Action<SortProgress> progress = null,
+                                    int maxBatchSize = 250000)
+        {
+
+            return SortFixedWidthByKeyDefCore(sourcefilePath: sourcefilePath,
+                                   sortDefinitions: sortDefinitions,
+                                   setKeys: setKeys,
+                                   dataFilter: dataFilter,
+                                   destinationFolder: destinationFolder,
+                                   hasHeader: hasHeader,
+                                   returnDuplicates: returnDuplicates,
+                                   progress: progress,
+                                   maxBatchSize: maxBatchSize);
+        }
+
+        internal static SortResults SortFixedWidthByKeyDefCore(string sourcefilePath,
+                                   SortDefinitions sortDefinitions,
+                                   Action<string, string[]> setKeys,
+                                   Func<string, bool> dataFilter = null,
+                                   string destinationFolder = null,
+                                   bool hasHeader = true,
+                                   bool returnDuplicates = false,
+                                   Action<SortProgress> progress = null,
+                                   bool deleteDbConnPath = true,
+                                   bool writeOutSortFile = true,
+                                    int maxBatchSize = 250000)
+        {
+            ArgumentValidation(sourcefilePath, setKeys, destinationFolder);
+            SortVars srtVars = new SortVars(sourcefilePath, destinationFolder);
+            SortResults srtResults = new SortResults(sourcefilePath, srtVars.DestFolder, srtVars.DbConnPath);
+            SortProgress srtProgress = new SortProgress();
+            try
+            {
+                srtResults.DeleteDuplicatesFile();
+                int lineCount = 1;
+                using (StreamReader reader = new StreamReader(sourcefilePath))
+                using (SqliteSortDefBulkInserter sortBulkInserter = new SqliteSortDefBulkInserter(srtVars.DbConnPath, sortDefinitions, maxBatchSize))
+                {
+                    string line;
+                    srtVars.Header = GetHeader(hasHeader, reader);
+                    srtProgress.InitReading();
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        srtResults.IncrementLinesRead();
+                        ReportReadProgress(progress, srtProgress, srtResults.LinesRead);
+                        if (dataFilter == null || dataFilter(line))
+                        {
+
+                            string[] keyValues = new string[sortDefinitions.GetKeys().Count];
+                            setKeys(line, keyValues);
+                            sortBulkInserter.Add(new SortKeyData { KeyValues = keyValues, Data = (line + Constants.Common.PreserveCharacter).Compress() });
+                            lineCount++;
+                        }
+                        else
+                        {
+                            srtResults.IncrementFiltered();
+                        }
+                    }
+                    sortBulkInserter.InsertAnyLeftOvers();
+                    sortBulkInserter.AddUnUniqueIndex();
+                }
+                srtProgress.InitWriting();
+                if (writeOutSortFile)
+                {
+
+                    srtResults.WriteOutSorted(dbConnPath: srtVars.DbConnPath,
+                                              header: srtVars.Header,
+                                              sortDefinitions: sortDefinitions,
+                                              delimiter: Constants.Delimiters.Tab,
+                                              returnDuplicates: returnDuplicates,
+                                              dupesFilePath: srtResults.DuplicatesFilePath,
+                                              compressed: true,
+                                              progress: (counter) => { srtProgress.Counter = counter; if (progress != null) { progress(srtProgress); } },
+                                              deleteDb: deleteDbConnPath);
+                }
+                else
+                {
+                    srtResults.Header = srtVars.Header;
+                }
+
+                srtResults.DeleteDuplicatesFileIfNoDuplicates();
+            }
+            catch (Exception)
+            {
+                CleanUp(srtVars, srtResults);
+                srtProgress = null;
+                throw;
+            }
+            return srtResults;
+        }
+
+
         private static void CleanUp(SortVars srtVars, SortResults srtResults)
         {
             SortFileHelpers.ExceptionCleanUp(srtVars, srtResults);
@@ -541,6 +768,21 @@ namespace Sortiously
             ArgumentValidation(maxBatchSize);
         }
 
+        private static void ArgumentValidation(string sourcefilePath, Action<string[], string, string[]> setKeys, string delimiter, string destinationFolder)
+        {
+            ArgumentValidation(setKeys);
+            ArgumentValidation(delimiter);
+            ArgumentValidation(sourcefilePath, destinationFolder);
+        }
+
+        private static void ArgumentValidation(Action<string[], string, string[]> setKeys)
+        {
+            if (setKeys == null)
+            {
+                throw new ArgumentNullException(SortHelpers.GetParameterName(new { setKeys }), "A setKeys function must be defined.");
+            }
+        }
+
         private static void ArgumentValidation<T>(string sourcefilePath, Func<string, T> getKey, string destinationFolder, int maxBatchSize)
         {
             if (getKey == null)
@@ -550,6 +792,16 @@ namespace Sortiously
             ArgumentValidation(sourcefilePath, destinationFolder);
             ArgumentValidation(maxBatchSize);
         }
+
+        private static void ArgumentValidation(string sourcefilePath, Action<string, string[]> setKeys, string destinationFolder)
+        {
+            if (setKeys == null)
+            {
+                throw new ArgumentNullException(SortHelpers.GetParameterName(new { setKeys }), "A setKeys function must be defined.");
+            }
+            ArgumentValidation(sourcefilePath, destinationFolder);
+        }
+
 
         private static void ArgumentValidation(string sourcefilePath, string destinationFolder)
         {

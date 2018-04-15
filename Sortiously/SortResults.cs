@@ -3,6 +3,7 @@ using System.IO;
 using System.Data.SQLite;
 using Sortiously.StringExtns;
 using Sortiously.Framework;
+using System.Collections.Generic;
 
 namespace Sortiously
 {
@@ -139,6 +140,108 @@ namespace Sortiously
                 SortFileHelpers.DeleteFileIfExists(dbConnPath);
             }
 
+        }
+
+        internal void WriteOutSorted(string dbConnPath, string header, SortDefinitions sortDefinitions, string delimiter = Constants.Delimiters.Comma, bool returnDuplicates = false, string dupesFilePath = "", bool compressed = false, Action<int> progress = null, bool deleteDb = true)
+        {
+            List<SortDefinition> sortDefs = sortDefinitions.GetKeys();
+            DeleteSortedFile();
+            this.Header = header;
+            StreamWriter dupeWriter = !string.IsNullOrEmpty(dupesFilePath) ? new StreamWriter(dupesFilePath) : null;
+            using (StreamWriter sw = new StreamWriter(SortedFilePath))
+            using (dupeWriter)
+            {
+                if (!string.IsNullOrWhiteSpace(header))
+                {
+                    sw.WriteLine(header);
+                    if (returnDuplicates)
+                    {
+                        WriteHeaderForDuplicatesFile(true, header, dupeWriter);
+                    }
+
+                }
+
+                using (var cn = new SQLiteConnection(@"Data Source=" + dbConnPath))
+                {
+                    string selectCmd = "SELECT * FROM FileData ORDER BY " + sortDefinitions.BuildOrderClause();
+                    cn.Open();
+                    using (var cmd = new SQLiteCommand(selectCmd, cn))
+                    using (SQLiteDataReader rdr = cmd.ExecuteReader())
+                    {
+                        var lastReadKeyList = GetNewDynamicListForKeys(sortDefinitions);
+                        while (rdr.Read())
+                        {
+                            string sqlLiteData = (string)rdr["LineData"];
+                            string sqlLiteoutLine = SortFileHelpers.UnEscapeByDelimiter(compressed ? sqlLiteData.Decompress() : sqlLiteData, delimiter);
+                            if (lastReadKeyList.Count > 0)
+                            {
+                                var currentReadKeyList = SetNewDynamicListForKeysValues(sortDefinitions, rdr);
+                                if (KeysEqual(currentReadKeyList, lastReadKeyList))
+                                {
+                                    if (returnDuplicates)
+                                    {
+                                        dupeWriter.WriteLine(sqlLiteoutLine);
+                                        this.IncrementDuplicates();
+                                    }
+                                    continue;
+                                }
+                                lastReadKeyList = currentReadKeyList;
+                            }
+                            sw.WriteLine(sqlLiteoutLine);
+                            IncrementLinesSorted();
+                            ReportProgress(progress, LinesSorted);
+                        }
+                    }
+                    cn.Close();
+                }
+
+            }
+            if (deleteDb)
+            {
+                SortFileHelpers.DeleteFileIfExists(dbConnPath);
+            }
+
+        }
+
+        private List<dynamic> GetNewDynamicListForKeys(SortDefinitions sortDefinitions)
+        {
+            var dynList = new List<dynamic>();
+            List<SortDefinition> srtKeys = sortDefinitions.GetKeys();
+            for (int i = 0; i < sortDefinitions.GetKeys().Count; i++)
+            {
+                if (srtKeys[i].IsUniqueKey)
+                {
+                    dynList.Add(null);
+                }
+            }
+            return dynList;
+        }
+
+        private List<dynamic> SetNewDynamicListForKeysValues(SortDefinitions sortDefinitions, SQLiteDataReader sdr)
+        {
+            var dynList = new List<dynamic>();
+            List<SortDefinition> srtKeys = sortDefinitions.GetKeys();
+            for (int i = 0; i < sortDefinitions.GetKeys().Count; i++)
+            {
+                if (srtKeys[i].IsUniqueKey)
+                {
+                    dynList.Add(sdr["SortKey" + i.ToString()]);
+                }
+            }
+            return dynList;
+        }
+
+        private bool KeysEqual(List<dynamic> currentKeys, List<dynamic> lastReadKeys)
+        {
+            for (int i = 0; i < currentKeys.Count; i++)
+            {
+                if (!currentKeys[i].Equals(lastReadKeys[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void WriteHeaderForDuplicatesFile(bool hasHeader, string hdr, StreamWriter dupeWriter)

@@ -8,9 +8,13 @@
     <Copyright>2018 fredthedev</Copyright>
     <PackageProjectUrl>https://github.com/fredgdaley2/Sortiously</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fredgdaley2/Sortiously</RepositoryUrl>
-    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageReleaseNotes>Enhancement update. Added the ability to sort by more than one key and direction.</PackageReleaseNotes>
     <PackageLicenseUrl>https://github.com/fredgdaley2/Sortiously/blob/master/License.txt</PackageLicenseUrl>
-    <PackageTags>sort delimited fixedwidth csharp sorting etl data-filtering merge purge csv parser</PackageTags>
+    <PackageTags>sort delimited fixedwidth csharp sorting etl data-filtering merge purge csv parser comma</PackageTags>
+    <Version>1.2.0</Version>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
