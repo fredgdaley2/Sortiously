@@ -71,15 +71,45 @@ duplicates file will also include the header.
 Anytime during the process when an exception is encountered any files produced will be removed.  The exception will then be thrown so the consuming application can take the appropriate action.
 
 
-#### There are four methods each to sort a delimited or fixed width file. Each method has an optional data filter and progress reporting.
+#### There are five methods each to sort a delimited or fixed width file. Each method has an optional data filter and progress reporting.
 
-1. Sort using a numeric key providing a column number for delimited files or starting position and length for fixed width files.
-2. Sort using a alphanumeric key providing a column number and length for delimited files or starting position and length for fixed width files.
-3. Sort using a numeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
-4. Sort using a alphanumeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
+1. Sort by defining SortDefinitions.
+2. Sort using a numeric key providing a column number for delimited files or starting position and length for fixed width files.
+3. Sort using a alphanumeric key providing a column number and length for delimited files or starting position and length for fixed width files.
+4. Sort using a numeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
+5. Sort using a alphanumeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
 
 #### Here are the methods.
 
+##### Sorts a delimited file by defining SortDefinitions.
+
+```csharp
+public static SortResults SortDelimitedByKeyDefinitions(
+                           string sourcefilePath,
+                           SortDefinitions sortDefinitions,
+                           Action<string[], string, string[]> setKeys,
+                           Func<string[], string, bool> dataFilter = null,
+                           string destinationFolder = null,
+                           string delimiter = Constants.Delimiters.Comma,
+                           bool hasHeader = true,
+                           bool returnDuplicates = false,
+                           Action<SortProgress> progress = null,
+                           int maxBatchSize = 250000)
+```
+
+##### Sorts a fixed width file by defining SortDefinitions.
+
+```csharp
+public static SortResults SortFixedWidthByKeyDefinitions(string sourcefilePath,
+                           SortDefinitions sortDefinitions,
+                           Action<string, string[]> setKeys,
+                           Func<string, bool> dataFilter = null,
+                           string destinationFolder = null,
+                           bool hasHeader = true,
+                           bool returnDuplicates = false,
+                           Action<SortProgress> progress = null,
+                           int maxBatchSize = 250000)
+```
 ##### Sorts a delimited file given a numeric key.
 
 ```csharp
@@ -215,6 +245,53 @@ public static SortResults SortFixedWidthByAlphaNumKey(
 
 #### Examples:
 
+#### Defining SortDefinitions for sorting a delimited file.
+_MockData.csv is in folder TestFIles_
+
+```csharp
+static void SortDelimitedByKeyDefinitions()
+{
+    SortDefinitions sortDefs = new SortDefinitions();
+    sortDefs.Add(new SortDefinition { DataType = KeyType.AlphaNumeric, Direction = SortDirection.Ascending });
+    sortDefs.Add(new SortDefinition { DataType = KeyType.Numberic, Direction = SortDirection.Descending });
+
+    SortResults srtResults = SortFile.SortDelimitedByKeyDefinitions(
+        sourcefilePath: Path.Combine(masterSourceFolder, "MockData.csv"),
+        sortDefinitions: sortDefs,
+        setKeys: (fields, line, keyValues) =>
+        {
+            //gender
+            keyValues[0] = fields[4];
+            //DateReceived
+            keyValues[1] = SortHelpers.JulianDateForSort(Convert.ToDateTime(fields[7])).ToString();
+        },
+        destinationFolder: masterDestFolder,
+        delimiter: Constants.Delimiters.Comma,
+        progress: ReportProgress);
+}
+
+```
+
+#### Defining SortDefinitions for sorting a fixed width file.
+_FWMockDataDetail.txt is in folder TestFIles_
+
+```csharp
+static void SortFixedWithByKeyDefinitions()
+{
+    SortDefinitions sortDefs = new SortDefinitions();
+    sortDefs.Add(new SortDefinition { DataType = KeyType.Numberic, Direction = SortDirection.Descending });
+    sortDefs.Add(new SortDefinition { DataType = KeyType.AlphaNumeric, Direction = SortDirection.Ascending, IsUniqueKey = true });
+    sortDefs.Add(new SortDefinition { DataType = KeyType.AlphaNumeric, Direction = SortDirection.Ascending, IsUniqueKey = true });
+
+    SortResults srtResults = SortFile.SortFixedWidthByKeyDefinitions(
+        sourcefilePath: Path.Combine(masterSourceFolder, "FWMockDataDetail.txt"),
+        sortDefinitions: sortDefs,
+        setKeys: SetFWKeys,
+        hasHeader: false,
+        destinationFolder: masterDestFolder,
+        progress: ReportProgress);
+}
+```
 #### Basic usage
 
 ```csharp

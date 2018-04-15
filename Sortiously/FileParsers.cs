@@ -12,7 +12,7 @@ namespace Sortiously
             TextFieldParser csvReader = new TextFieldParser(sourceFileName)
             {
                 Delimiters = new string[] { delimiter },
-                HasFieldsEnclosedInQuotes = delimiter != Constants.Delimiters.Tab,
+                HasFieldsEnclosedInQuotes = delimiter == Constants.Delimiters.Comma,
                 TrimWhiteSpace = trimWhiteSpace
             };
             ParseFile(csvReader, dataReadAction);
@@ -23,7 +23,7 @@ namespace Sortiously
             TextFieldParser csvReader = new TextFieldParser(sourceReader)
             {
                 Delimiters = new string[] { delimiter },
-                HasFieldsEnclosedInQuotes = delimiter != Constants.Delimiters.Tab,
+                HasFieldsEnclosedInQuotes = delimiter == Constants.Delimiters.Comma,
                 TrimWhiteSpace = trimWhiteSpace
             };
             ParseFile(csvReader, dataReadAction);
