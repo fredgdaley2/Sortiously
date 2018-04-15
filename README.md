@@ -246,7 +246,7 @@ public static SortResults SortFixedWidthByAlphaNumKey(
 #### Examples:
 
 #### Defining SortDefinitions for sorting a delimited file.
-_MockData.csv is in folder TestFIles_
+_see MockData.csv_
 
 ```csharp
 static void SortDelimitedByKeyDefinitions()
@@ -273,7 +273,7 @@ static void SortDelimitedByKeyDefinitions()
 ```
 
 #### Defining SortDefinitions for sorting a fixed width file.
-_FWMockDataDetail.txt is in folder TestFIles_
+_see FWMockDataDetail.txt_
 
 ```csharp
 static void SortFixedWithByKeyDefinitions()
@@ -290,6 +290,16 @@ static void SortFixedWithByKeyDefinitions()
         hasHeader: false,
         destinationFolder: masterDestFolder,
         progress: ReportProgress);
+}
+
+static void SetFWKeys(string line, string[] keyValues)
+{
+    FileParser.ParseFixedWidthString(new StringReader(line), (fields, lineNum) =>
+    {
+        keyValues[0] = SortHelpers.JulianDateForSort(Convert.ToDateTime(fields[7])).ToString();
+        keyValues[1] = fields[4];
+        keyValues[2] = fields[6].PadKeyWithZero(20);
+    }, new int[] { 5, 9, 10, 32, 7, 15, 20, 10 });
 }
 ```
 #### Basic usage
