@@ -22,7 +22,7 @@ PM> Install-Package Sortiously
 **Progress Reporting:** Use this knowing that it will slow down the process due to writing to console or other output source.  So if you want pure speed don't report the progress.
 
 #### The progress report object:
-[See Example](#example-showing-how-to-implement-the-progress-reporting.)
+[See Example](#example-showing-how-to-implement-the-progress-reporting)
 
 ```csharp
 public class SortProgress
@@ -83,7 +83,7 @@ Anytime during the process when an exception is encountered any files produced w
 #### Here are the methods.
 
 ##### Sorts a delimited file by defining SortDefinitions.    
-[See Example](#defining-sortDefinitions-for-sorting-a-delimited-file.)
+[See Example](#defining-sortDefinitions-for-sorting-a-delimited-file)
 
 ```csharp
 public static SortResults SortDelimitedByKeyDefinitions(
@@ -100,7 +100,7 @@ public static SortResults SortDelimitedByKeyDefinitions(
 ```
 
 ##### Sorts a fixed width file by defining SortDefinitions.
-[See Example](#defining-sortDefinitions-for-sorting-a-fixed-width-file.)
+[See Example](#defining-sortDefinitions-for-sorting-a-fixed-width-file)
 
 ```csharp
 public static SortResults SortFixedWidthByKeyDefinitions(string sourcefilePath,
