@@ -83,7 +83,7 @@ Anytime during the process when an exception is encountered any files produced w
 #### Here are the methods.
 
 ##### Sorts a delimited file by defining SortDefinitions.    
-[See Example](#defining-sortDefinitions-for-sorting-a-delimited-file)
+[See Example](#defining-sortdefinitions-for-sorting-a-delimited-file)
 
 ```csharp
 public static SortResults SortDelimitedByKeyDefinitions(
@@ -100,7 +100,7 @@ public static SortResults SortDelimitedByKeyDefinitions(
 ```
 
 ##### Sorts a fixed width file by defining SortDefinitions.
-[See Example](#defining-sortDefinitions-for-sorting-a-fixed-width-file)
+[See Example](#defining-sortdefinitions-for-sorting-a-fixed-width-file)
 
 ```csharp
 public static SortResults SortFixedWidthByKeyDefinitions(string sourcefilePath,
