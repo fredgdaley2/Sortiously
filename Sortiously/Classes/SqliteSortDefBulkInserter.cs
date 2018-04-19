@@ -12,6 +12,8 @@ namespace Sortiously
         private readonly SortDefinitions sortDefs;
         private readonly SQLiteConnection dbConnection;
         private readonly List<SortKeyData> sortKeyDataList;
+        private string insertBulkCmd;
+
         public SqliteSortDefBulkInserter(string connStr, SortDefinitions sortDefinitions, int maxBatchSize = 250000)
         {
             sortDefs = sortDefinitions;
@@ -20,6 +22,7 @@ namespace Sortiously
             dbConnection = new SQLiteConnection(@"Data Source=" + connStr);
             dbConnection.Open();
             CreateTable();
+            SetInsertBulkCommand();
         }
 
         private void CreateTable()
@@ -90,11 +93,14 @@ namespace Sortiously
             }
         }
 
+        private void SetInsertBulkCommand()
+        {
+            insertBulkCmd = string.Format(@"INSERT INTO FileData ({0},LineData) VALUES ({1},@data);", sortDefs.BuildInsertColumns(), sortDefs.BuildInsertParamters());
+        }
+
         private void InsertBulk()
         {
 
-            string sqlInsertUsers =
-            string.Format(@"INSERT INTO FileData ({0},LineData) VALUES ({1},@data);", sortDefs.BuildInsertColumns(), sortDefs.BuildInsertParamters());
             int numberOfKeys = sortDefs.GetKeys().Count;
             List<SortDefinition> sortKeys  = sortDefs.GetKeys();
 
@@ -104,7 +110,7 @@ namespace Sortiously
                 using (var transaction = dbConnection.BeginTransaction())
                 {
 
-                    cmd.CommandText = sqlInsertUsers;
+                    cmd.CommandText = insertBulkCmd;
 
 
                     for (int pvdx = 0; pvdx < numberOfKeys; pvdx++)
