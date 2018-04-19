@@ -78,17 +78,37 @@ namespace Sortiously
 
 
 
-        internal void WriteOutSorted(string dbConnPath, string header, SortDirection sortDir, string delimiter = Constants.Delimiters.Comma, bool hasUniqueIndex = false, bool returnDuplicates = false, string dupesFilePath = "", bool compressed = false, Action<int> progress = null, bool deleteDb = true)
+        internal void WriteOutSorted(string dbConnPath,
+                                     string header,
+                                     SortDirection sortDir,
+                                     string delimiter = Constants.Delimiters.Comma,
+                                     bool hasUniqueIndex = false,
+                                     bool returnDuplicates = false,
+                                     string dupesFilePath = "",
+                                     bool compressed = false,
+                                     Action<int> progress = null,
+                                     DataTransportation dataTransportation = null,
+                                     bool deleteDb = true)
         {
-            DeleteSortedFile();
+            bool writeSortedFile = WriteoutSortedFile(dataTransportation);
+
+            if (writeSortedFile)
+            {
+                DeleteSortedFile();
+            }
             this.Header = header;
             StreamWriter dupeWriter = !string.IsNullOrEmpty(dupesFilePath) ? new StreamWriter(dupesFilePath) : null;
-            using (StreamWriter sw = new StreamWriter(SortedFilePath))
+            StreamWriter sw = writeSortedFile ? new StreamWriter(SortedFilePath) : null;
+            using (sw)
             using (dupeWriter)
             {
                 if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sw.WriteLine(header);
+                    if (sw != null)
+                    {
+                        sw.WriteLine(header);
+                    }
+
                     if (returnDuplicates)
                     {
                         WriteHeaderForDuplicatesFile(true, header, dupeWriter);
@@ -126,9 +146,15 @@ namespace Sortiously
                                 }
                                 lastReadKey = sqlLiteKey;
                             }
-                            sw.WriteLine(sqlLiteoutLine);
+
+                            if (sw != null)
+                            {
+                                sw.WriteLine(sqlLiteoutLine);
+                            }
+
                             IncrementLinesSorted();
                             ReportProgress(progress, LinesSorted);
+                            DoDataTransportPassthrough(dataTransportation, sqlLiteoutLine);
                         }
                     }
                     cn.Close();
@@ -142,18 +168,38 @@ namespace Sortiously
 
         }
 
-        internal void WriteOutSorted(string dbConnPath, string header, SortDefinitions sortDefinitions, string delimiter = Constants.Delimiters.Comma, bool returnDuplicates = false, string dupesFilePath = "", bool compressed = false, Action<int> progress = null, bool deleteDb = true)
+        internal void WriteOutSorted(string dbConnPath,
+                                      string header,
+                                      SortDefinitions sortDefinitions,
+                                      string delimiter = Constants.Delimiters.Comma,
+                                      bool returnDuplicates = false,
+                                      string dupesFilePath = "",
+                                      bool compressed = false,
+                                      Action<int> progress = null,
+                                      DataTransportation dataTransportation = null,
+                                      bool deleteDb = true)
         {
-            List<SortDefinition> sortDefs = sortDefinitions.GetKeys();
-            DeleteSortedFile();
+            bool writeSortedFile = WriteoutSortedFile(dataTransportation);
+
+            if (writeSortedFile)
+            {
+                DeleteSortedFile();
+            }
+
             this.Header = header;
+
             StreamWriter dupeWriter = !string.IsNullOrEmpty(dupesFilePath) ? new StreamWriter(dupesFilePath) : null;
-            using (StreamWriter sw = new StreamWriter(SortedFilePath))
+            StreamWriter sw = writeSortedFile ? new StreamWriter(SortedFilePath) : null;
+            using (sw)
             using (dupeWriter)
             {
                 if (!string.IsNullOrWhiteSpace(header))
                 {
-                    sw.WriteLine(header);
+                    if (sw != null)
+                    {
+                        sw.WriteLine(header);
+                    }
+
                     if (returnDuplicates)
                     {
                         WriteHeaderForDuplicatesFile(true, header, dupeWriter);
@@ -187,9 +233,14 @@ namespace Sortiously
                                 }
                                 lastReadKeyList = currentReadKeyList;
                             }
-                            sw.WriteLine(sqlLiteoutLine);
+                            if (sw != null)
+                            {
+                                sw.WriteLine(sqlLiteoutLine);
+                            }
+
                             IncrementLinesSorted();
                             ReportProgress(progress, LinesSorted);
+                            DoDataTransportPassthrough(dataTransportation, sqlLiteoutLine);
                         }
                     }
                     cn.Close();
@@ -203,6 +254,25 @@ namespace Sortiously
 
         }
 
+        private bool WriteoutSortedFile(DataTransportation dataTransportation)
+        {
+            if (dataTransportation == null || (dataTransportation.TransportType == DataTransport.File || dataTransportation.TransportType == (DataTransport.File | DataTransport.Passthrough)))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void DoDataTransportPassthrough(DataTransportation dataTransportation, string sqlLiteoutLine)
+        {
+            if (dataTransportation != null && (dataTransportation.TransportType == DataTransport.Passthrough || dataTransportation.TransportType == (DataTransport.File | DataTransport.Passthrough)))
+            {
+                if (dataTransportation.PassthroughAction != null)
+                {
+                    dataTransportation.PassthroughAction(sqlLiteoutLine);
+                }
+            }
+        }
         private List<dynamic> GetNewDynamicListForKeys(SortDefinitions sortDefinitions)
         {
             var dynList = new List<dynamic>();

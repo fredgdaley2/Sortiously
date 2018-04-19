@@ -1,8 +1,8 @@
 # Sortiously
 
-#### Sortiously - Sort a delimited or fixed width files by a defined key with data filter options and report progress.
+#### Sortiously - Sort large and small delimited or fixed width files by defined key(s) and direction with optional data filtering and progress reporting.
 
-*Additionally can merge purge files. Documentation in **ReadMeMergePurge.txt***
+*Additionally can merge purge files. Documentation in [**ReadMeMergePurge.txt**](Sortiously/ReadMeMergePurge.txt)
 
 ### Installing Sortiously ##
 
@@ -13,11 +13,19 @@ in the [Package Manager Console](http://docs.nuget.org/consume/package-manager-c
 PM> Install-Package Sortiously
 ```
 ##### *Dependencies:* System.Data.SQLite.Core
-*Uses SQLite to do the sorting according to the custom defined key.*
+*Uses SQLite to do the sorting according to the custom defined key(s) and direction.*
 
 * Very CPU and memory friendly.
 * The original file is not overwritten or changed.
-* Sort more than one file at a time using multiple threads.
+* Thread safe.
+
+### Features
+
+* Sort using multiple keys, direction and unique keys. [see Sort Definitions](#defining-sortdefinitions-for-sorting-a-delimited-file)
+* Filter out data while reading file.
+* Remove duplicate data using unique keys. Choose to have duplicates written out to file.
+* Select either to write out the sorted file and/or receive the data through an Action method after sorting. [see DataTransportation](#datatransportation-parameter)
+* Customize the keys from the data using delegates. [see Examples](#examples)
 
 **Progress Reporting:** Use this knowing that it will slow down the process due to writing to console or other output source.  So if you want pure speed don't report the progress.
 
@@ -80,6 +88,37 @@ Anytime during the process when an exception is encountered any files produced w
 4. Sort using a numeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
 5. Sort using a alphanumeric key but the key is defined using a delegate, anonymous method, to provide custom key construction.
 
+#### DataTransportation Parameter:
+Each sort method can take an optional DataTransportation parameter.
+Use the provided DataTransportationFactory methods to set the parameter.
+
+```csharp
+//This is the default it will write out the sorted file. (can be ommitted)
+ dataTransportation: DataTransportationFactory.CreateAsFile()
+
+//This will write out the file and pass each line through the Action method. 
+ dataTransportation: DataTransportationFactory.CreateAsFileAndPassthrough((sortedData) =>
+{
+    string doSomethingWithData = sortedData;
+})
+
+//or
+ dataTransportation: DataTransportationFactory.CreateAsFileAndPassthrough(PassMeTheData)
+
+void PassMeTheData(string sortedData) 
+{
+   string doSomethingWithData = sortedData;
+}
+
+//Just passes each line through the Action method. The sorted file will not be written out. 
+ dataTransportation: DataTransportationFactory.CreateAsPassthrough((sortedData) =>
+{
+    string doSomethingWithData = sortedData;
+})
+
+```
+
+
 #### Here are the methods.
 
 ##### Sorts a delimited file by defining SortDefinitions.    
@@ -91,6 +130,7 @@ public static SortResults SortDelimitedByKeyDefinitions(
                            SortDefinitions sortDefinitions,
                            Action<string[], string, string[]> setKeys,
                            Func<string[], string, bool> dataFilter = null,
+                           DataTransportation dataTransportation = null,
                            string destinationFolder = null,
                            string delimiter = Constants.Delimiters.Comma,
                            bool hasHeader = true,
@@ -107,6 +147,7 @@ public static SortResults SortFixedWidthByKeyDefinitions(string sourcefilePath,
                            SortDefinitions sortDefinitions,
                            Action<string, string[]> setKeys,
                            Func<string, bool> dataFilter = null,
+                           DataTransportation dataTransportation = null,
                            string destinationFolder = null,
                            bool hasHeader = true,
                            bool returnDuplicates = false,
@@ -119,6 +160,7 @@ public static SortResults SortFixedWidthByKeyDefinitions(string sourcefilePath,
 public static SortResults SortDelimitedByNumericKey(
                                string sourcefilePath,
                                Func<string[], string, bool> dataFilter = null,
+                               DataTransportation dataTransportation = null,
                                string destinationFolder = null,
                                string delimiter = Constants.Delimiters.Comma,
                                bool hasHeader = true,
@@ -136,6 +178,7 @@ public static SortResults SortDelimitedByNumericKey(
 public static SortResults SortDelimitedByAlphaNumKey(
                                string sourcefilePath,
                                Func<string[], string, bool> dataFilter = null,
+                               DataTransportation dataTransportation = null,
                                string destinationFolder = null,
                                string delimiter = Constants.Delimiters.Comma,
                                bool hasHeader = true,
@@ -155,6 +198,7 @@ public static SortResults SortDelimitedByNumericKey(
                                string sourcefilePath,
                                Func<string[], string, long> getKey,
                                Func<string[], string, bool> dataFilter = null,
+                               DataTransportation dataTransportation = null,
                                string destinationFolder = null,
                                string delimiter = Constants.Delimiters.Comma,
                                bool hasHeader = true,
@@ -172,6 +216,7 @@ public static SortResults SortDelimitedByAlphaNumKey(
                                string sourcefilePath,
                                Func<string[], string, string> getKey,
                                Func<string[], string, bool> dataFilter = null,
+                               DataTransportation dataTransportation = null,
                                string destinationFolder = null,
                                string delimiter = Constants.Delimiters.Comma,
                                bool hasHeader = true,
@@ -188,6 +233,7 @@ public static SortResults SortDelimitedByAlphaNumKey(
  public static SortResults SortFixedWidthByNumericKey(
                                string sourcefilePath,
                                Func<string, bool> dataFilter = null,
+                               DataTransportation dataTransportation = null,
                                string destinationFolder = null,
                                bool hasHeader = true,
                                FixedWidthKey keyDef = null,
@@ -204,6 +250,7 @@ public static SortResults SortDelimitedByAlphaNumKey(
 public static SortResults SortFixedWidthByAlphaNumKey(
                                string sourcefilePath,
                                Func<string, bool> dataFilter = null,
+                               DataTransportation dataTransportation = null,
                                string destinationFolder = null,
                                bool hasHeader = true,
                                FixedWidthKey keyDef = null,
@@ -221,6 +268,7 @@ public static SortResults SortFixedWidthByNumericKey(
                                string sourcefilePath,
                                Func<string, long> getKey,
                                Func<string, bool> dataFilter = null,
+                               DataTransportation dataTransportation = null,
                                string destinationFolder = null,
                                bool hasHeader = true,
                                bool isUniqueKey = false,
@@ -237,6 +285,7 @@ public static SortResults SortFixedWidthByAlphaNumKey(
                                string sourcefilePath,
                                Func<string, string> getKey,
                                Func<string, bool> dataFilter = null,
+                               DataTransportation dataTransportation = null,
                                string destinationFolder = null,
                                bool hasHeader = true,
                                bool isUniqueKey = false,

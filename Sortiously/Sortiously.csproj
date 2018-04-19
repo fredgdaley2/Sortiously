@@ -3,18 +3,20 @@
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
     <Authors>fredthedev</Authors>
-    <Description>Sort large and small delimited and fixed-width files.  Merge purge two files.</Description>
+    <Description>Sort large and small delimited or fixed width files by defined key(s) and direction with optional data filtering and progress reporting.  Merge purge two files.</Description>
     <PackageId>Sortiously</PackageId>
     <Copyright>2018 fredthedev</Copyright>
     <PackageProjectUrl>https://github.com/fredgdaley2/Sortiously</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fredgdaley2/Sortiously</RepositoryUrl>
-    <PackageReleaseNotes>Enhancement update. Added the ability to sort by more than one key and direction.</PackageReleaseNotes>
+    <PackageReleaseNotes>Enhancement update. Added DataTransportation parameter to sort methods to pass the data while writing out the sorted file or just pass the data.  If needed you won't have to wait till the file is written to work with the data. 
+** Breaking Change ** If you are not using Named Parameters this update will have breaking changes due to the order of the parameters on SortFile methods.
+</PackageReleaseNotes>
     <PackageLicenseUrl>https://github.com/fredgdaley2/Sortiously/blob/master/License.txt</PackageLicenseUrl>
     <PackageTags>sort delimited fixedwidth csharp sorting etl data-filtering merge purge csv parser comma</PackageTags>
-    <Version>1.2.0</Version>
-    <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <FileVersion>1.2.0.0</FileVersion>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>1.3.0</Version>
+    <AssemblyVersion>1.3.0.0</AssemblyVersion>
+    <FileVersion>1.3.0.0</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
