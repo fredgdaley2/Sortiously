@@ -18,8 +18,12 @@ namespace Sortiously
             SortKeyList = new List<SortKey<T>>();
             hasUniqueKey = uniqueKey;
             sortDirection = sortDir;
-            dbConnection = new SQLiteConnection(@"Data Source=" + connStr);
             MaxBatchSize = maxBatchSize;
+            SQLiteConnectionStringBuilder connBldr = new SQLiteConnectionStringBuilder();
+            connBldr.DataSource = connStr;
+            connBldr.JournalMode = SQLiteJournalModeEnum.Off;
+            connBldr.Version = 3;
+            dbConnection = new SQLiteConnection(connBldr.ConnectionString);
             dbConnection.Open();
             CreateStringNumTable();
 

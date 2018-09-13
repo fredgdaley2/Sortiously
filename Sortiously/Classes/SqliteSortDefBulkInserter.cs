@@ -19,7 +19,11 @@ namespace Sortiously
             sortDefs = sortDefinitions;
             MaxBatchSize = maxBatchSize;
             sortKeyDataList = new List<SortKeyData>();
-            dbConnection = new SQLiteConnection(@"Data Source=" + connStr);
+            SQLiteConnectionStringBuilder connBldr = new SQLiteConnectionStringBuilder();
+            connBldr.DataSource = connStr;
+            connBldr.JournalMode = SQLiteJournalModeEnum.Off;
+            connBldr.Version = 3;
+            dbConnection = new SQLiteConnection(connBldr.ConnectionString);
             dbConnection.Open();
             CreateTable();
             SetInsertBulkCommand();

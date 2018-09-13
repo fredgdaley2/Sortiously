@@ -1,31 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net462</TargetFrameworks>
     <Authors>fredthedev</Authors>
     <Description>Sort large and small delimited or fixed width files by defined key(s) and direction with optional data filtering and progress reporting.  Merge purge two files.</Description>
     <PackageId>Sortiously</PackageId>
     <Copyright>2018 fredthedev</Copyright>
     <PackageProjectUrl>https://github.com/fredgdaley2/Sortiously</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fredgdaley2/Sortiously</RepositoryUrl>
-    <PackageReleaseNotes>Enhancement update. Added DataTransportation parameter to sort methods to pass the data while writing out the sorted file or just pass the data.  If needed you won't have to wait till the file is written to work with the data. 
-** Breaking Change ** If you are not using Named Parameters this update will have breaking changes due to the order of the parameters on SortFile methods.
-</PackageReleaseNotes>
+    <PackageReleaseNotes>Enhancement update. Improved parsing performance of delimited and fixedwidth files by replacing the TextfieldParser with a home grown parser.  This also removed the dependency on Microsoft.VisualBasic libary.  Made some Sqlite tweaks and updated theSystem.Data.SQLite.Core dll to version 1.0.109.0.  Now supports .Net Standard 2.0.</PackageReleaseNotes>
     <PackageLicenseUrl>https://github.com/fredgdaley2/Sortiously/blob/master/License.txt</PackageLicenseUrl>
     <PackageTags>sort delimited fixedwidth csharp sorting etl data-filtering merge purge csv parser comma</PackageTags>
-    <Version>1.3.0</Version>
-    <AssemblyVersion>1.3.0.0</AssemblyVersion>
-    <FileVersion>1.3.0.0</FileVersion>
+    <Version>1.4.0</Version>
+    <AssemblyVersion>1.4.0.0</AssemblyVersion>
+    <FileVersion>1.4.0.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.108" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualBasic" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.0" />
   </ItemGroup>
 
 </Project>
