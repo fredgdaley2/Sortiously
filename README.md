@@ -13,6 +13,8 @@ in the [Package Manager Console](http://docs.nuget.org/consume/package-manager-c
 PM> Install-Package Sortiously
 ```
 ##### *Dependencies:* System.Data.SQLite.Core
+*For .Net Core projects getting SQLite.Interop.dll not found please refer to this [StackOverflow question](https://stackoverflow.com/questions/38594837/visual-studio-c-sharp-sqlite-interop-dll-not-found)*
+
 *Uses SQLite to do the sorting according to the custom defined key(s) and direction.*
 
 * Very CPU and memory friendly.

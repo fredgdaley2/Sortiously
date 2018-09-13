@@ -10,7 +10,11 @@ namespace Sortiously
 
         public SqliteRepository(string connStr)
         {
-            dbConnection = new SQLiteConnection(@"Data Source=" + connStr);
+            SQLiteConnectionStringBuilder connBldr = new SQLiteConnectionStringBuilder();
+            connBldr.DataSource = connStr;
+            connBldr.JournalMode = SQLiteJournalModeEnum.Off;
+            connBldr.Version = 3;
+            dbConnection = new SQLiteConnection(connBldr.ConnectionString);
             dbConnection.Open();
         }
 
@@ -59,15 +63,17 @@ namespace Sortiously
 
         public void Update(long id, string theData)
         {
-            string sqlUpdate =
-            string.Format(@"UPDATE FileData SET LineData = '{0}' WHERE Id = {1};", theData, id);
+            const string SqlUpdate = @"UPDATE FileData SET LineData = @data WHERE Id = @key;";
             using (var cmd = new SQLiteCommand(dbConnection))
             {
 
                 using (var transaction = dbConnection.BeginTransaction())
                 {
 
-                    cmd.CommandText = sqlUpdate;
+
+                    cmd.CommandText = SqlUpdate;
+                    cmd.Parameters.AddWithValue("@key", id);
+                    cmd.Parameters.AddWithValue("@data", theData);
                     cmd.ExecuteNonQuery();
                     transaction.Commit();
                 }
