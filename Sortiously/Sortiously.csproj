@@ -8,18 +8,18 @@
     <Copyright>2018 fredthedev</Copyright>
     <PackageProjectUrl>https://github.com/fredgdaley2/Sortiously</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fredgdaley2/Sortiously</RepositoryUrl>
-    <PackageReleaseNotes>Enhancement update. Improved parsing performance of delimited and fixedwidth files by replacing the TextfieldParser with a home grown parser.  This also removed the dependency on Microsoft.VisualBasic libary.  Made some Sqlite tweaks and updated theSystem.Data.SQLite.Core dll to version 1.0.109.0.  Now supports .Net Standard 2.0.</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated System.Data.SQLite.Core to version 1.0.115.0. Upgraded to Microsoft.Charp 4.7.0</PackageReleaseNotes>
     <PackageLicenseUrl>https://github.com/fredgdaley2/Sortiously/blob/master/License.txt</PackageLicenseUrl>
     <PackageTags>sort delimited fixedwidth csharp sorting etl data-filtering merge purge csv parser comma</PackageTags>
-    <Version>1.4.0</Version>
-    <AssemblyVersion>1.4.0.0</AssemblyVersion>
-    <FileVersion>1.4.0.0</FileVersion>
+    <Version>1.4.1</Version>
+    <AssemblyVersion>1.4.1.0</AssemblyVersion>
+    <FileVersion>1.4.1.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />
   </ItemGroup>
 
 </Project>
